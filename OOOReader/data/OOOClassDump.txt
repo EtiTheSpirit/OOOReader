@@ -12,19 +12,19 @@ IF com/threerings/admin/client/DSetEditor$Accessor
 CL com/threerings/admin/client/DSetEditor$DObjectAccessor
 CL com/threerings/admin/client/EditableFieldEditor:com/threerings/admin/client/FieldEditor
 CL com/threerings/admin/client/EditableFieldEditor$1:javax/swing/AbstractAction
-CL CL com/threerings/admin/client/FieldEditor:javax/swing/JPanel
+CL com/threerings/admin/client/FieldEditor:javax/swing/JPanel
 IF com/threerings/admin/client/FieldEditor$Accessor
 CL com/threerings/admin/client/FieldEditor$DObjectAccessor
-CL CL com/threerings/admin/client/ObjectEditorPanel:com/samskivert/swing/ScrollablePanel
-CL CL com/threerings/admin/client/PulldownFieldEditor:com/threerings/admin/client/FieldEditor
+CL com/threerings/admin/client/ObjectEditorPanel:com/samskivert/swing/ScrollablePanel
+CL com/threerings/admin/client/PulldownFieldEditor:com/threerings/admin/client/FieldEditor
 CL com/threerings/admin/client/PulldownFieldEditor$Choice
-	value LSystem/Object;
+	value Ljava/lang/Object;
 CL com/threerings/admin/client/TabbedDSetEditor:javax/swing/JPanel
 IF com/threerings/admin/client/TabbedDSetEditor$AccessorFactory
 CL com/threerings/admin/client/TabbedDSetEditor$EntryGrouper
 CL com/threerings/admin/client/TabbedDSetEditor$EntryGrouper$1
 CL com/threerings/admin/client/TabbedDSetEditor$FieldGrouper:com/threerings/admin/client/TabbedDSetEditor$EntryGrouper
-CL IF com/threerings/admin/data/AdminCodes
+IF com/threerings/admin/data/AdminCodes
 CL com/threerings/admin/data/AdminCodes$__Fields
 CL com/threerings/admin/data/AdminMarshaller:com/threerings/presents/data/InvocationMarshaller
 CL com/threerings/admin/data/AdminMarshaller$ConfigInfoMarshaller:com/threerings/presents/data/InvocationMarshaller$ListenerMarshaller
@@ -43,17 +43,17 @@ CL com/threerings/admin/server/ConfigRegistry
 CL com/threerings/admin/server/ConfigRegistry$DefaultSerializer
 CL com/threerings/admin/server/ConfigRegistry$ObjectRecord
 	object Lcom/threerings/presents/dobj/DObject;
-CL IF com/threerings/admin/server/ConfigRegistry$Serializer
+IF com/threerings/admin/server/ConfigRegistry$Serializer
 CL com/threerings/admin/server/DatabaseConfigRegistry:com/threerings/admin/server/ConfigRegistry
 CL com/threerings/admin/server/DatabaseConfigRegistry$DatabaseObjectRecord:com/threerings/admin/server/ConfigRegistry$ObjectRecord
 	object Lcom/threerings/presents/dobj/DObject;
 CL com/threerings/admin/server/DatabaseConfigRegistry$DatabaseObjectRecord$1:com/samskivert/jdbc/WriteOnlyUnit
 	queueStamp J
-CL CL CL CL com/threerings/admin/server/ExportSerializer
+CL com/threerings/admin/server/ExportSerializer
 CL com/threerings/admin/server/PeeredDatabaseConfigRegistry:com/threerings/admin/server/DatabaseConfigRegistry
 CL com/threerings/admin/server/PeeredDatabaseConfigRegistry$PeerDatabaseObjectRecord:com/threerings/admin/server/DatabaseConfigRegistry$DatabaseObjectRecord
 	object Lcom/threerings/presents/dobj/DObject;
-CL CL com/threerings/admin/server/persist/ConfigDatum
+CL com/threerings/admin/server/persist/ConfigDatum
 	node Ljava/lang/String;
 	object Ljava/lang/String;
 	field Ljava/lang/String;
@@ -65,12 +65,12 @@ CL com/threerings/admin/server/PrefsConfigRegistry$PrefsObjectRecord:com/threeri
 IF com/threerings/admin/web/client/ConfigEditorTab$ConfigAccessor
 CL com/threerings/admin/web/client/ConfigFieldEditor
 CL com/threerings/admin/web/client/ConfigFieldEditor$CheckboxFieldEditor:com/threerings/admin/web/client/ConfigFieldEditor
-CL CL com/threerings/admin/web/client/ConfigFieldEditor$StringFieldEditor:com/threerings/admin/web/client/ConfigFieldEditor
-CL CL CL com/threerings/admin/web/gwt/ConfigField$1
-CL IF com/threerings/admin/web/gwt/ConfigServiceAsync
+CL com/threerings/admin/web/client/ConfigFieldEditor$StringFieldEditor:com/threerings/admin/web/client/ConfigFieldEditor
+CL com/threerings/admin/web/gwt/ConfigField$1
+IF com/threerings/admin/web/gwt/ConfigServiceAsync
 CL com/threerings/admin/web/server/ConfigServlet$1
-CL CL com/threerings/admin/web/server/ConfigServlet$2
-CL CL com/threerings/bureau/client/Agent
+CL com/threerings/admin/web/server/ConfigServlet$2
+CL com/threerings/bureau/client/Agent
 CL com/threerings/bureau/client/BureauClient:com/threerings/presents/client/Client
 CL com/threerings/bureau/client/BureauClient$1
 CL com/threerings/bureau/client/BureauDecoder:com/threerings/presents/client/InvocationDecoder
@@ -156,7 +156,7 @@ CL com/threerings/cast/CharacterManager$3:com/threerings/cast/CompositedActionFr
 CL com/threerings/cast/CharacterManager$TranslatedComponent
 	ccomp Lcom/threerings/cast/CharacterComponent;
 	xlation Ljava/awt/Point;
-CL CL com/threerings/cast/CharacterSprite:com/threerings/media/sprite/ImageSprite
+CL com/threerings/cast/CharacterSprite:com/threerings/media/sprite/ImageSprite
 CL com/threerings/cast/ComponentClass
 	name Ljava/lang/String;
 	renderPriority I
@@ -213,14 +213,14 @@ CL com/threerings/config/ConfigGroup$1
 CL com/threerings/config/ConfigGroup$2
 CL com/threerings/config/ConfigGroup$3
 CL com/threerings/config/ConfigGroup$4
-CL IF com/threerings/config/ConfigGroupListener
+IF com/threerings/config/ConfigGroupListener
 CL com/threerings/config/ConfigManager
 CL com/threerings/config/ConfigManager$1
 CL com/threerings/config/ConfigManager$2:com/google/common/collect/Ordering
 CL com/threerings/config/ConfigManager$3
 CL com/threerings/config/ConfigManager$4:com/google/common/collect/Ordering
 IF com/threerings/config/ConfigManager$Consumer
-CL CL com/threerings/config/ConfigReference:com/threerings/util/DeepObject
+CL com/threerings/config/ConfigReference:com/threerings/util/DeepObject
 CL com/threerings/config/ConfigReferenceSet
 CL com/threerings/config/ConfigReferenceSet$Default:com/threerings/config/ConfigReferenceSet
 IF com/threerings/config/ConfigUpdateListener
@@ -234,7 +234,7 @@ CL com/threerings/config/dist/client/DConfigDirector$2:com/threerings/config/dis
 IF com/threerings/config/dist/client/DConfigService
 CL com/threerings/config/dist/data/ConfigEntry:com/threerings/io/SimpleStreamableObject
 CL com/threerings/config/dist/data/ConfigKey:com/threerings/io/SimpleStreamableObject
-CL CL com/threerings/config/dist/data/DConfigBootstrapData:com/threerings/presents/net/BootstrapData
+CL com/threerings/config/dist/data/DConfigBootstrapData:com/threerings/presents/net/BootstrapData
 	dconfigOid I
 	connectionId I
 	clientOid I
@@ -335,14 +335,14 @@ CL com/threerings/config/tools/ConfigEditor$ManagerPanel$GroupItem
 	group Lcom/threerings/config/ConfigGroup;
 CL com/threerings/config/tools/ConfigEditor$ManagerPanel$GroupItem$1
 CL com/threerings/config/tools/ConfigEditor$ManagerPanel$GroupItem$2:com/threerings/config/swing/ConfigTree
-CL CL com/threerings/config/tools/ConfigFlattener
+CL com/threerings/config/tools/ConfigFlattener
 CL com/threerings/config/tools/ConfigFlattener$FlatDependencyGatherer:com/threerings/config/util/DependencyGatherer$PreExamined
 CL com/threerings/config/tools/ConfigFlattener$FlattenContext
 CL com/threerings/config/tools/ConfigFlattener$ReferenceMapper:com/threerings/config/util/DependencyGatherer
 CL com/threerings/config/tools/ConfigFlattener$StripOnSaveConfigManager:com/threerings/config/ConfigManager
 CL com/threerings/config/tools/ConfigFlattener$SuppressableWarning:java/lang/Enum
 EN com/threerings/config/tools/ConfigFlattener$SuppressableWarning$__Enum:System/Enum
-CL CL com/threerings/config/tools/ConfigSearcher:javax/swing/JFrame
+CL com/threerings/config/tools/ConfigSearcher:javax/swing/JFrame
 CL com/threerings/config/tools/ConfigSearcher$1
 CL com/threerings/config/tools/ConfigSearcher$2:java/awt/event/MouseAdapter
 IF com/threerings/config/tools/ConfigSearcher$AttributeDetector
@@ -365,7 +365,7 @@ CL com/threerings/config/tools/ConfigSearcher$Presence$1
 CL com/threerings/config/tools/ConfigSearcher$Result
 IF com/threerings/config/tools/ConfigSearcher$SearchReporter
 CL com/threerings/config/tools/ConfigSearcher$TudeySceneDomain:com/threerings/config/tools/ConfigSearcher$FileDomain
-CL CL com/threerings/config/tools/ExporterReplacers:java/lang/Enum
+CL com/threerings/config/tools/ExporterReplacers:java/lang/Enum
 EN com/threerings/config/tools/ExporterReplacers$__Enum:System/Enum
 CL com/threerings/config/tools/ExporterReplacers$1:com/threerings/config/tools/ExporterReplacers
 CL com/threerings/config/tools/ExporterReplacers$2:com/threerings/config/tools/ExporterReplacers
@@ -375,16 +375,16 @@ CL com/threerings/config/tools/ResourceEditor$1
 CL com/threerings/config/tools/ResourceEditor$2:javax/swing/filechooser/FileFilter
 CL com/threerings/config/tools/ResourceEditor$3:javax/swing/filechooser/FileFilter
 CL com/threerings/config/tools/ResourceEditor$4:com/threerings/editor/tools/BatchValidateDialog
-CL CL com/threerings/config/util/ConfigId
+CL com/threerings/config/util/ConfigId
 CL com/threerings/config/util/DependencyGatherer
 CL com/threerings/config/util/DependencyGatherer$1
 CL com/threerings/config/util/DependencyGatherer$Default:com/threerings/config/util/DependencyGatherer
 CL com/threerings/config/util/DependencyGatherer$PreExamined:com/threerings/config/util/DependencyGatherer
 CL com/threerings/config/util/DependencyGatherer$PreExamined$UnknownParameterTypeMarker:com/threerings/config/ManagedConfig
-CL CL com/threerings/config/util/FieldCache
+CL com/threerings/config/util/FieldCache
 CL com/threerings/config/util/FieldCache$1:com/google/common/cache/CacheLoader
 CL com/threerings/config/util/FieldCache$1$1
-CL CL com/threerings/config/util/FieldCache$2
+CL com/threerings/config/util/FieldCache$2
 CL com/threerings/config/util/PasteHelper
 IF com/threerings/crowd/chat/client/ChannelSpeakService
 CL com/threerings/crowd/chat/client/ChatDirector:com/threerings/presents/client/BasicDirector
@@ -573,7 +573,7 @@ CL com/threerings/crowd/data/OccupantInfo$NameUpdater
 IF com/threerings/crowd/data/OccupantInfo$Updater
 CL com/threerings/crowd/data/Place:com/threerings/io/SimpleStreamableObject
 CL com/threerings/crowd/data/PlaceConfig:com/threerings/io/SimpleStreamableObject
-CL CL com/threerings/crowd/data/PlaceObject:com/threerings/presents/dobj/DObject
+CL com/threerings/crowd/data/PlaceObject:com/threerings/presents/dobj/DObject
 	manager Lcom/threerings/crowd/data/PlaceObject$ManagerCaller;
 	occupants Lcom/threerings/presents/dobj/OidList;
 	occupantInfo Lcom/threerings/presents/dobj/DSet;
@@ -616,7 +616,7 @@ CL com/threerings/crowd/server/CrowdServer$1:com/threerings/presents/server/Sess
 CL com/threerings/crowd/server/CrowdServer$CrowdModule:com/threerings/presents/server/PresentsServer$PresentsModule
 CL com/threerings/crowd/server/CrowdSession:com/threerings/presents/server/PresentsSession
 CL com/threerings/crowd/server/LocationManager
-CL IF com/threerings/crowd/server/LocationProvider
+IF com/threerings/crowd/server/LocationProvider
 CL com/threerings/crowd/server/LocationSender:com/threerings/presents/server/InvocationSender
 IF com/threerings/crowd/server/OccupantOp
 CL com/threerings/crowd/server/PlaceManager
@@ -634,11 +634,11 @@ CL com/threerings/crowd/server/PlaceManager$8:com/threerings/crowd/server/PlaceM
 CL com/threerings/crowd/server/PlaceManager$9
 CL com/threerings/crowd/server/PlaceManager$DelegateOp
 IF com/threerings/crowd/server/PlaceManager$MessageHandler
-CL CL com/threerings/crowd/server/PlaceManagerDelegate
+CL com/threerings/crowd/server/PlaceManagerDelegate
 CL com/threerings/crowd/server/PlaceRegistry
 CL com/threerings/crowd/server/PlaceRegistry$1
 IF com/threerings/crowd/server/PlaceRegistry$PreStartupHook
-CL IF com/threerings/crowd/util/CrowdContext
+IF com/threerings/crowd/util/CrowdContext
 CL com/threerings/delta/ArrayDelta:com/threerings/delta/Delta
 CL com/threerings/delta/BareArrayMask:com/threerings/io/ArrayMask
 CL com/threerings/delta/Delta
@@ -646,31 +646,31 @@ CL com/threerings/delta/Delta$DeltaCreator
 CL com/threerings/delta/Delta$DeltaCreator$1:com/threerings/delta/Delta$DeltaCreator
 CL com/threerings/delta/Delta$DeltaCreator$2:com/threerings/delta/Delta$DeltaCreator
 CL com/threerings/delta/Delta$DeltaCreator$3:com/threerings/delta/Delta$DeltaCreator
-CL CL IF com/threerings/delta/Deltable
+IF com/threerings/delta/Deltable
 IF com/threerings/delta/DeltaFinal
 CL com/threerings/delta/ReflectiveDelta:com/threerings/delta/Delta
 CL com/threerings/delta/ReflectiveDelta$1:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$10:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$11:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$12:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$13:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$14:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$15:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$16:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$17:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$18:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$2:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$3:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$4:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$5:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$6:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$7:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$8:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$9:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
-CL CL com/threerings/delta/ReflectiveDelta$ClassMapping
+CL com/threerings/delta/ReflectiveDelta$10:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$11:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$12:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$13:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$14:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$15:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$16:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$17:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$18:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$2:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$3:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$4:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$5:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$6:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$7:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$8:com/threerings/delta/ReflectiveDelta$FieldHandler
+CL com/threerings/delta/ReflectiveDelta$9:com/threerings/delta/ReflectiveDelta$FinalFieldHandler
+CL com/threerings/delta/ReflectiveDelta$ClassMapping
 CL com/threerings/delta/ReflectiveDelta$FieldHandler
 CL com/threerings/delta/ReflectiveDelta$FinalFieldHandler:com/threerings/delta/ReflectiveDelta$FieldHandler
-CL CL com/threerings/editor/ArgumentPathProperty:com/threerings/editor/PathProperty
+CL com/threerings/editor/ArgumentPathProperty:com/threerings/editor/PathProperty
 IF com/threerings/editor/Coercible
 IF com/threerings/editor/DynamicallyEditable
 IF com/threerings/editor/Editable
@@ -680,19 +680,19 @@ CL com/threerings/editor/EditorMessageBundle$__Fields
 IF com/threerings/editor/EditorTypes
 CL com/threerings/editor/EditorTypes$__Fields
 CL com/threerings/editor/FieldProperty:com/threerings/editor/Property
-CL IF com/threerings/editor/FileConstraints
+IF com/threerings/editor/FileConstraints
 CL com/threerings/editor/Introspector
 CL com/threerings/editor/Introspector$1
-CL CL com/threerings/editor/InvalidPathsException:java/lang/Exception
+CL com/threerings/editor/InvalidPathsException:java/lang/Exception
 CL com/threerings/editor/Log
 CL com/threerings/editor/MethodProperty:com/threerings/editor/Property
-CL CL com/threerings/editor/PathProperty:com/threerings/editor/Property
+CL com/threerings/editor/PathProperty:com/threerings/editor/Property
 CL com/threerings/editor/PathProperty$1:com/threerings/editor/PathProperty$IndexProperty
 CL com/threerings/editor/PathProperty$2:com/threerings/editor/PathProperty$IndexProperty
 CL com/threerings/editor/PathProperty$3:com/threerings/editor/Property
 CL com/threerings/editor/PathProperty$IndexProperty:com/threerings/editor/Property
-CL CL com/threerings/editor/Property:com/threerings/util/DeepObject
-CL IF com/threerings/editor/PropertyOrder
+CL com/threerings/editor/Property:com/threerings/util/DeepObject
+IF com/threerings/editor/PropertyOrder
 IF com/threerings/editor/Strippable
 CL com/threerings/editor/swing/BaseEditorPanel:com/threerings/editor/swing/BasePropertyEditor
 CL com/threerings/editor/swing/BaseEditorPanel$1:javax/swing/AbstractAction
@@ -711,9 +711,9 @@ CL com/threerings/editor/swing/EditorPanel$3
 CL com/threerings/editor/swing/EditorPanel$CategoryMode:java/lang/Enum
 EN com/threerings/editor/swing/EditorPanel$CategoryMode$__Enum:System/Enum
 CL com/threerings/editor/swing/editors/ArrayListEditor:com/threerings/editor/swing/PropertyEditor
-CL CL com/threerings/editor/swing/editors/BooleanEditor:com/threerings/editor/swing/PropertyEditor
+CL com/threerings/editor/swing/editors/BooleanEditor:com/threerings/editor/swing/PropertyEditor
 CL com/threerings/editor/swing/editors/ChoiceEditor:com/threerings/editor/swing/PropertyEditor
-CL CL com/threerings/editor/swing/editors/Color4fEditor:com/threerings/editor/swing/PropertyEditor
+CL com/threerings/editor/swing/editors/Color4fEditor:com/threerings/editor/swing/PropertyEditor
 CL com/threerings/editor/swing/editors/Color4fEditor$1:javax/swing/JButton
 CL com/threerings/editor/swing/editors/ColorizationEditor:com/threerings/editor/swing/PropertyEditor
 CL com/threerings/editor/swing/editors/ColorizationEditor$ClassItem
@@ -732,7 +732,7 @@ CL com/threerings/editor/swing/editors/ConfigReferencePanelArrayListEditor$Wrapp
 CL com/threerings/editor/swing/editors/ConfigTypeEditor:com/threerings/editor/swing/editors/ChoiceEditor
 CL com/threerings/editor/swing/editors/ConfigTypeEditor$ClassBox
 CL com/threerings/editor/swing/editors/ConfigTypeEditor$TypeProperty:com/threerings/editor/Property
-CL CL com/threerings/editor/swing/editors/DateTimeEditor:com/threerings/editor/swing/PropertyEditor
+CL com/threerings/editor/swing/editors/DateTimeEditor:com/threerings/editor/swing/PropertyEditor
 CL com/threerings/editor/swing/editors/DateTimeEditor$DateOnlyEditor:com/threerings/editor/swing/editors/DateTimeEditor
 CL com/threerings/editor/swing/editors/DateTimeEditor$Mode:java/lang/Enum
 EN com/threerings/editor/swing/editors/DateTimeEditor$Mode$__Enum:System/Enum
@@ -776,13 +776,13 @@ CL com/threerings/editor/swing/editors/Vector3fEditor:com/threerings/editor/swin
 CL com/threerings/editor/swing/FindDialog:javax/swing/JDialog
 CL com/threerings/editor/swing/FindDialog$1
 CL com/threerings/editor/swing/ObjectPanel:com/threerings/editor/swing/BasePropertyEditor
-CL CL com/threerings/editor/swing/ParameterHighlighter
+CL com/threerings/editor/swing/ParameterHighlighter
 CL com/threerings/editor/swing/ParameterHighlighter$1
 CL com/threerings/editor/swing/ParameterHighlighter$1$1
 CL com/threerings/editor/swing/ParameterHighlighter$1$2
 CL com/threerings/editor/swing/ParameterHighlighter$ParameterWatcher
 CL com/threerings/editor/swing/PropertyEditor:com/threerings/editor/swing/BasePropertyEditor
-CL CL com/threerings/editor/swing/QuaternionPanel:com/threerings/editor/swing/BasePropertyEditor
+CL com/threerings/editor/swing/QuaternionPanel:com/threerings/editor/swing/BasePropertyEditor
 CL com/threerings/editor/swing/QuaternionPanel$Mode:java/lang/Enum
 EN com/threerings/editor/swing/QuaternionPanel$Mode$__Enum:System/Enum
 CL com/threerings/editor/swing/Transform2DPanel:com/threerings/editor/swing/BasePropertyEditor
@@ -796,10 +796,10 @@ CL com/threerings/editor/swing/TreeEditorPanel$1
 CL com/threerings/editor/swing/TreeEditorPanel$2:javax/swing/TransferHandler
 CL com/threerings/editor/swing/TreeEditorPanel$3:javax/swing/filechooser/FileFilter
 CL com/threerings/editor/swing/TreeEditorPanel$NodeObject
-	value LSystem/Object;
+	value Ljava/lang/Object;
 CL com/threerings/editor/swing/TreeEditorPanel$NodeTransfer
 	node Ljavax/swing/tree/DefaultMutableTreeNode;
-	value LSystem/Object;
+	value Ljava/lang/Object;
 CL com/threerings/editor/swing/Vector2fPanel:com/threerings/editor/swing/BasePropertyEditor
 CL com/threerings/editor/swing/Vector2fPanel$Mode:java/lang/Enum
 EN com/threerings/editor/swing/Vector2fPanel$Mode$__Enum:System/Enum
@@ -812,7 +812,7 @@ CL com/threerings/editor/tools/BatchValidateDialog:javax/swing/JDialog
 CL com/threerings/editor/tools/ConfigResourcesTask
 CL com/threerings/editor/tools/ConfigValidatorTask:com/threerings/editor/tools/AbstractValidatorTask
 CL com/threerings/editor/tools/StripTask
-CL CL com/threerings/editor/TranslatedPathProperty:com/threerings/editor/PathProperty
+CL com/threerings/editor/TranslatedPathProperty:com/threerings/editor/PathProperty
 IF com/threerings/editor/util/EditorContext
 CL com/threerings/editor/util/PropertyUtil
 CL com/threerings/editor/util/PropertyUtil$1
@@ -832,7 +832,7 @@ CL com/threerings/export/BinaryImporter$3
 CL com/threerings/export/BinaryImporter$ClassData
 CL com/threerings/export/BinaryImporter$ClassicIdReader
 CL com/threerings/export/BinaryImporter$ClassWrapper
-CL CL com/threerings/export/BinaryImporter$FieldData
+CL com/threerings/export/BinaryImporter$FieldData
 IF com/threerings/export/BinaryImporter$IdReader
 CL com/threerings/export/BinaryImporter$IntermediateIdReader:com/threerings/export/BinaryImporter$VarIntReader
 CL com/threerings/export/BinaryImporter$VarIntReader
@@ -845,21 +845,21 @@ CL com/threerings/export/Exporter$Replacement
 IF com/threerings/export/Exporter$Replacer
 CL com/threerings/export/FieldMarshaller
 CL com/threerings/export/FieldMarshaller$1:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$2:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$3:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$4:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$5:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$6:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$7:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$8:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/FieldMarshaller$9:com/threerings/export/FieldMarshaller
-CL CL com/threerings/export/Importer
+CL com/threerings/export/FieldMarshaller$2:com/threerings/export/FieldMarshaller
+CL com/threerings/export/FieldMarshaller$3:com/threerings/export/FieldMarshaller
+CL com/threerings/export/FieldMarshaller$4:com/threerings/export/FieldMarshaller
+CL com/threerings/export/FieldMarshaller$5:com/threerings/export/FieldMarshaller
+CL com/threerings/export/FieldMarshaller$6:com/threerings/export/FieldMarshaller
+CL com/threerings/export/FieldMarshaller$7:com/threerings/export/FieldMarshaller
+CL com/threerings/export/FieldMarshaller$8:com/threerings/export/FieldMarshaller
+CL com/threerings/export/FieldMarshaller$9:com/threerings/export/FieldMarshaller
+CL com/threerings/export/Importer
 CL com/threerings/export/Log
 CL com/threerings/export/MetaStreams
 CL com/threerings/export/ObjectMarshaller
-	_prototype LSystem/Object;
+	_prototype Ljava/lang/Object;
 CL com/threerings/export/ObjectMarshaller$FieldData
-CL CL com/threerings/export/Streamer
+CL com/threerings/export/Streamer
 CL com/threerings/export/Streamer$1:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$10:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$11:com/threerings/export/Streamer
@@ -881,9 +881,9 @@ CL com/threerings/export/Streamer$25:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$26:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$27:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$28:com/threerings/export/Streamer
-CL CL com/threerings/export/Streamer$3:com/threerings/export/Streamer
+CL com/threerings/export/Streamer$3:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$4:com/threerings/export/Streamer
-CL CL com/threerings/export/Streamer$5:com/threerings/export/Streamer
+CL com/threerings/export/Streamer$5:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$6:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$7:com/threerings/export/Streamer
 CL com/threerings/export/Streamer$8:com/threerings/export/Streamer
@@ -913,9 +913,9 @@ CL com/threerings/export/Stringifier$26:com/threerings/export/Stringifier
 CL com/threerings/export/Stringifier$27:com/threerings/export/Stringifier
 CL com/threerings/export/Stringifier$28:com/threerings/export/Stringifier
 CL com/threerings/export/Stringifier$29:com/threerings/export/Stringifier
-CL CL com/threerings/export/Stringifier$3:com/threerings/export/Stringifier
+CL com/threerings/export/Stringifier$3:com/threerings/export/Stringifier
 CL com/threerings/export/Stringifier$4:com/threerings/export/Stringifier
-CL CL com/threerings/export/Stringifier$5:com/threerings/export/Stringifier
+CL com/threerings/export/Stringifier$5:com/threerings/export/Stringifier
 CL com/threerings/export/Stringifier$6:com/threerings/export/Stringifier
 CL com/threerings/export/Stringifier$7:com/threerings/export/Stringifier
 CL com/threerings/export/Stringifier$8:com/threerings/export/Stringifier
@@ -924,7 +924,7 @@ CL com/threerings/export/tools/BinaryToBinaryConverter
 CL com/threerings/export/tools/BinaryToXMLConverter
 CL com/threerings/export/tools/XMLToBinaryConverter
 CL com/threerings/export/tools/XMLToBinaryTask
-CL CL com/threerings/export/util/ExportFileUtil
+CL com/threerings/export/util/ExportFileUtil
 CL com/threerings/export/util/ExportUtil
 CL com/threerings/export/util/LazyOutputStream:java/io/OutputStream
 CL com/threerings/export/util/LazyOutputStream$1
@@ -934,7 +934,7 @@ CL com/threerings/export/util/SerializableWrapper$2:java/io/InputStream
 CL com/threerings/export/util/StreamableWrapper:com/threerings/io/SimpleStreamableObject
 CL com/threerings/export/XMLExporter:com/threerings/export/Exporter
 CL com/threerings/export/XMLImporter:com/threerings/export/Importer
-CL CL com/threerings/expr/BooleanExpression:com/threerings/util/DeepObject
+CL com/threerings/expr/BooleanExpression:com/threerings/util/DeepObject
 CL com/threerings/expr/BooleanExpression$1:com/threerings/expr/ExpressionParser
 CL com/threerings/expr/BooleanExpression$And:com/threerings/expr/BooleanExpression$BinaryOperation
 	firstOperand Lcom/threerings/expr/BooleanExpression;
@@ -1243,8 +1243,8 @@ CL com/threerings/expr/Transform3DExpression$Uniform$1:com/threerings/expr/Objec
 IF com/threerings/expr/Updater
 CL com/threerings/expr/util/ScopeUtil
 CL com/threerings/expr/util/ScopeUtil$1:com/threerings/expr/Variable
-CL CL com/threerings/expr/util/ScopeUtil$2:com/threerings/expr/Function
-CL CL CL com/threerings/expr/Variable
+CL com/threerings/expr/util/ScopeUtil$2:com/threerings/expr/Function
+CL com/threerings/expr/Variable
 CL com/threerings/expr/Variable$1:com/threerings/expr/Variable
 CL com/threerings/expr/Variable$2:com/threerings/expr/Variable
 CL com/threerings/expr/Variable$3:com/threerings/expr/Variable
@@ -1318,24 +1318,24 @@ CL com/threerings/io/ClassMapping
 	streamer Lcom/threerings/io/Streamer;
 CL com/threerings/io/FieldMarshaller
 CL com/threerings/io/FieldMarshaller$1:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$10:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$11:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$2:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$3:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$4:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$5:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$6:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$7:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$8:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$9:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$MethodFieldMarshaller:com/threerings/io/FieldMarshaller
-CL CL com/threerings/io/FieldMarshaller$StreamerMarshaller:com/threerings/io/FieldMarshaller
-CL CL CL com/threerings/io/FramedInputStream:java/io/InputStream
+CL com/threerings/io/FieldMarshaller$10:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$11:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$2:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$3:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$4:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$5:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$6:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$7:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$8:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$9:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$MethodFieldMarshaller:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FieldMarshaller$StreamerMarshaller:com/threerings/io/FieldMarshaller
+CL com/threerings/io/FramedInputStream:java/io/InputStream
 CL com/threerings/io/FramingOutputStream:com/threerings/io/ByteBufferOutputStream
 IF com/threerings/io/Intern
 IF com/threerings/io/NotStreamable
 CL com/threerings/io/ObjectInputStream:java/io/DataInputStream
-CL CL com/threerings/io/ObjectOutputStream:java/io/DataOutputStream
+CL com/threerings/io/ObjectOutputStream:java/io/DataOutputStream
 CL com/threerings/io/SimpleStreamableObject
 IF com/threerings/io/Streamable
 IF com/threerings/io/Streamable$Closure
@@ -1349,8 +1349,8 @@ CL com/threerings/io/Streamer$ArrayStreamer:com/threerings/io/Streamer
 CL com/threerings/io/Streamer$ByteEnumStreamer:com/threerings/io/Streamer$EnumStreamer
 CL com/threerings/io/Streamer$ByteOrdEnumStreamer:com/threerings/io/Streamer$OrdEnumStreamer
 CL com/threerings/io/Streamer$ClassStreamer:com/threerings/io/Streamer
-CL CL com/threerings/io/Streamer$CustomClassStreamer:com/threerings/io/Streamer$ClassStreamer
-CL CL com/threerings/io/Streamer$EnumPolicy:java/lang/Enum
+CL com/threerings/io/Streamer$CustomClassStreamer:com/threerings/io/Streamer$ClassStreamer
+CL com/threerings/io/Streamer$EnumPolicy:java/lang/Enum
 EN com/threerings/io/Streamer$EnumPolicy$__Enum:System/Enum
 CL com/threerings/io/Streamer$EnumStreamer:com/threerings/io/Streamer
 CL com/threerings/io/Streamer$EnumStreamer$EnumReader:java/lang/Enum
@@ -1360,7 +1360,7 @@ CL com/threerings/io/Streamer$IntOrdEnumStreamer:com/threerings/io/Streamer$OrdE
 CL com/threerings/io/Streamer$NameEnumStreamer:com/threerings/io/Streamer$EnumStreamer
 CL com/threerings/io/Streamer$OrdEnumStreamer:com/threerings/io/Streamer$EnumStreamer
 CL com/threerings/io/Streamer$ShortOrdEnumStreamer:com/threerings/io/Streamer$OrdEnumStreamer
-CL CL com/threerings/io/UnreliableObjectInputStream:com/threerings/io/ObjectInputStream
+CL com/threerings/io/UnreliableObjectInputStream:com/threerings/io/ObjectInputStream
 CL com/threerings/io/UnreliableObjectOutputStream:com/threerings/io/ObjectOutputStream
 CL com/threerings/math/Box
 CL com/threerings/math/FloatMath
@@ -1483,7 +1483,7 @@ IF com/threerings/media/FrameManager$ManagedRoot
 IF com/threerings/media/FrameManager$SafeLayerComponent
 CL com/threerings/media/FrameManager$Ticker:java/lang/Thread
 CL com/threerings/media/FrameManager$Ticker$1
-CL IF com/threerings/media/FrameParticipant
+IF com/threerings/media/FrameParticipant
 CL com/threerings/media/HourglassView:com/threerings/media/TimerView
 CL com/threerings/media/IconManager
 CL com/threerings/media/image/AWTImageCreator
@@ -1652,7 +1652,7 @@ CL com/threerings/media/util/AStarPathUtil$Info
 	tpred Lcom/threerings/media/util/AStarPathUtil$TraversalPred;
 	tilewid I
 	tilehei I
-	trav LSystem/Object;
+	trav Ljava/lang/Object;
 	open Ljava/util/SortedSet;
 	destx I
 	desty I
@@ -1709,7 +1709,7 @@ CL com/threerings/micasa/client/LogonPanel:javax/swing/JPanel
 CL com/threerings/micasa/client/LogonPanel$1:javax/swing/JPanel
 CL com/threerings/micasa/client/LogonPanel$2:javax/swing/JTextArea
 CL com/threerings/micasa/client/MiCasaApp
-CL CL com/threerings/micasa/client/MiCasaApplet:java/applet/Applet
+CL com/threerings/micasa/client/MiCasaApplet:java/applet/Applet
 CL com/threerings/micasa/client/MiCasaApplet$1:com/threerings/presents/client/ClientAdapter
 CL com/threerings/micasa/client/MiCasaClient
 CL com/threerings/micasa/client/MiCasaClient$1:java/awt/event/WindowAdapter
@@ -1726,7 +1726,7 @@ CL com/threerings/micasa/lobby/Lobby:com/threerings/io/SimpleStreamableObject
 	gameIdent Ljava/lang/String;
 	name Ljava/lang/String;
 CL com/threerings/micasa/lobby/LobbyConfig:com/threerings/crowd/data/PlaceConfig
-CL CL com/threerings/micasa/lobby/LobbyController:com/threerings/crowd/client/PlaceController
+CL com/threerings/micasa/lobby/LobbyController:com/threerings/crowd/client/PlaceController
 CL com/threerings/micasa/lobby/LobbyManager:com/threerings/crowd/server/PlaceManager
 CL com/threerings/micasa/lobby/LobbyMarshaller:com/threerings/presents/data/InvocationMarshaller
 CL com/threerings/micasa/lobby/LobbyMarshaller$CategoriesMarshaller:com/threerings/presents/data/InvocationMarshaller$ListenerMarshaller
@@ -1751,7 +1751,7 @@ CL com/threerings/micasa/lobby/LobbyObject:com/threerings/crowd/data/PlaceObject
 CL com/threerings/micasa/lobby/LobbyPanel:javax/swing/JPanel
 IF com/threerings/micasa/lobby/LobbyProvider
 CL com/threerings/micasa/lobby/LobbyRegistry
-CL CL com/threerings/micasa/lobby/LobbySelector:javax/swing/JPanel
+CL com/threerings/micasa/lobby/LobbySelector:javax/swing/JPanel
 CL com/threerings/micasa/lobby/LobbySelector$1:java/awt/event/MouseAdapter
 CL com/threerings/micasa/lobby/LobbySelector$LobbyCellRenderer:javax/swing/DefaultListCellRenderer
 IF com/threerings/micasa/lobby/LobbyService
@@ -1785,7 +1785,7 @@ CL com/threerings/micasa/simulator/client/SimulatorApp$3:com/samskivert/util/Int
 CL com/threerings/micasa/simulator/client/SimulatorApp$ServerThread:java/lang/Thread
 IF com/threerings/micasa/simulator/client/SimulatorClient
 CL com/threerings/micasa/simulator/client/SimulatorController:com/samskivert/swing/Controller
-CL IF com/threerings/micasa/simulator/client/SimulatorFrame
+IF com/threerings/micasa/simulator/client/SimulatorFrame
 IF com/threerings/micasa/simulator/client/SimulatorService
 CL com/threerings/micasa/simulator/data/SimulatorInfo
 	gameConfigClass Ljava/lang/String;
@@ -1797,14 +1797,14 @@ CL com/threerings/micasa/simulator/server/Simulant
 CL com/threerings/micasa/simulator/server/SimulatorManager
 CL com/threerings/micasa/simulator/server/SimulatorManager$CreateGameTask
 CL com/threerings/micasa/simulator/server/SimulatorManager$CreateGameTask$1
-CL CL com/threerings/micasa/simulator/server/SimulatorProvider
+CL com/threerings/micasa/simulator/server/SimulatorProvider
 IF com/threerings/micasa/simulator/server/SimulatorServer
 IF com/threerings/micasa/simulator/util/SimulatorContext
 IF com/threerings/micasa/util/MiCasaContext
 CL com/threerings/miso/client/DirtyItemList
 CL com/threerings/miso/client/DirtyItemList$1
 CL com/threerings/miso/client/DirtyItemList$DirtyItem
-	obj LSystem/Object;
+	obj Ljava/lang/Object;
 	ox I
 	oy I
 	lx I
@@ -2161,8 +2161,8 @@ CL com/threerings/openal/FileStream:com/threerings/openal/URLStream
 CL com/threerings/openal/Listener
 CL com/threerings/openal/Log
 CL com/threerings/openal/Mp3StreamDecoder:com/threerings/openal/StreamDecoder
-CL CL com/threerings/openal/OggStreamDecoder:com/threerings/openal/StreamDecoder
-CL CL com/threerings/openal/OpenALSoundPlayer:com/threerings/media/sound/SoundPlayer
+CL com/threerings/openal/OggStreamDecoder:com/threerings/openal/StreamDecoder
+CL com/threerings/openal/OpenALSoundPlayer:com/threerings/media/sound/SoundPlayer
 CL com/threerings/openal/OpenALSoundPlayer$1
 CL com/threerings/openal/OpenALSoundPlayer$2
 CL com/threerings/openal/OpenALSoundPlayer$2$1
@@ -2228,7 +2228,7 @@ CL com/threerings/openal/Stream
 CL com/threerings/openal/Stream$FadeMode:java/lang/Enum
 EN com/threerings/openal/Stream$FadeMode$__Enum:System/Enum
 CL com/threerings/openal/StreamDecoder
-CL CL com/threerings/openal/URLStream:com/threerings/openal/Stream
+CL com/threerings/openal/URLStream:com/threerings/openal/Stream
 CL com/threerings/openal/URLStream$QueuedURL
 	url Ljava/net/URL;
 	loop Z
@@ -2236,7 +2236,7 @@ IF com/threerings/openal/util/AlContext
 CL com/threerings/openal/WaveDataClipProvider
 CL com/threerings/opengl/AWTCanvas:org/lwjgl/opengl/AWTGLCanvas
 CL com/threerings/opengl/AWTCanvas$1
-CL CL com/threerings/opengl/camera/Camera
+CL com/threerings/opengl/camera/Camera
 CL com/threerings/opengl/camera/CameraHandler
 IF com/threerings/opengl/camera/CameraHandler$Offset
 CL com/threerings/opengl/camera/MouseOrbiter
@@ -2825,7 +2825,7 @@ CL com/threerings/opengl/gui/ColorPicker$2
 CL com/threerings/opengl/gui/ComboBox:com/threerings/opengl/gui/Label
 CL com/threerings/opengl/gui/ComboBox$1
 CL com/threerings/opengl/gui/ComboBox$ComboMenuItem:com/threerings/opengl/gui/MenuItem
-	item LSystem/Object;
+	item Ljava/lang/Object;
 CL com/threerings/opengl/gui/ComboBox$ComboPopupMenu:com/threerings/opengl/gui/PopupMenu
 CL com/threerings/opengl/gui/ComboBox$DefaultFormatter
 IF com/threerings/opengl/gui/ComboBox$Formatter
@@ -2987,7 +2987,7 @@ CL com/threerings/opengl/gui/config/ComponentConfig:com/threerings/util/DeepObje
 	preferredSize Lcom/threerings/opengl/gui/config/DimensionConfig;
 CL com/threerings/opengl/gui/config/ComponentConfig$Button:com/threerings/opengl/gui/config/ComponentConfig$Label
 	action Ljava/lang/String;
-	argument LSystem/Object;
+	argument Ljava/lang/Object;
 	icon Lcom/threerings/opengl/gui/config/IconConfig;
 	text Ljava/lang/String;
 	iconTextGap I
@@ -3024,7 +3024,7 @@ CL com/threerings/opengl/gui/config/ComponentConfig$ChatOverlay:com/threerings/o
 CL com/threerings/opengl/gui/config/ComponentConfig$CheckBox:com/threerings/opengl/gui/config/ComponentConfig$ToggleButton
 	selected Z
 	action Ljava/lang/String;
-	argument LSystem/Object;
+	argument Ljava/lang/Object;
 	icon Lcom/threerings/opengl/gui/config/IconConfig;
 	text Ljava/lang/String;
 	iconTextGap I
@@ -3355,7 +3355,7 @@ CL com/threerings/opengl/gui/config/ComponentConfig$TextField:com/threerings/ope
 CL com/threerings/opengl/gui/config/ComponentConfig$ToggleButton:com/threerings/opengl/gui/config/ComponentConfig$Button
 	selected Z
 	action Ljava/lang/String;
-	argument LSystem/Object;
+	argument Ljava/lang/Object;
 	icon Lcom/threerings/opengl/gui/config/IconConfig;
 	text Ljava/lang/String;
 	iconTextGap I
@@ -3710,7 +3710,7 @@ CL com/threerings/opengl/gui/ScrollButton$1
 CL com/threerings/opengl/gui/ScrollingList:com/threerings/opengl/gui/Container
 CL com/threerings/opengl/gui/ScrollingList$Entry
 	component Lcom/threerings/opengl/gui/Component;
-	value LSystem/Object;
+	value Ljava/lang/Object;
 	height I
 CL com/threerings/opengl/gui/ScrollingList$Viewport:com/threerings/opengl/gui/Container
 CL com/threerings/opengl/gui/ScrollPane:com/threerings/opengl/gui/Container
@@ -3813,7 +3813,7 @@ CL com/threerings/opengl/gui/UserInterface$ScriptQueue
 CL com/threerings/opengl/gui/UserInterface$ScriptQueue$1
 CL com/threerings/opengl/gui/UserInterface$TickableScript:com/threerings/opengl/gui/UserInterface$Script
 CL com/threerings/opengl/gui/UserInterface$UIScope:com/threerings/expr/DynamicScope
-CL CL com/threerings/opengl/gui/UserInterfaceWindow:com/threerings/opengl/gui/StretchWindow
+CL com/threerings/opengl/gui/UserInterfaceWindow:com/threerings/opengl/gui/StretchWindow
 CL com/threerings/opengl/gui/util/ControllerUtil
 CL com/threerings/opengl/gui/util/ControllerUtil$1
 CL com/threerings/opengl/gui/util/Dimension
@@ -4043,7 +4043,7 @@ CL com/threerings/opengl/model/config/AnimationConfig$Imported:com/threerings/op
 	modifiers [Lcom/threerings/opengl/model/config/AnimationConfig$TargetModifier;
 	rate F
 	targets [Ljava/lang/String;
-	transforms [Lcom/threerings/math/Transform3D[];
+	transforms [[Lcom/threerings/math/Transform3D;
 	priority I
 	override Z
 	weight F
@@ -5319,7 +5319,7 @@ CL com/threerings/opengl/util/ImageCache$ImageKey
 	zations [Lcom/threerings/media/image/Colorization;
 IF com/threerings/opengl/util/Intersectable
 CL com/threerings/opengl/util/Phaser
-CL CL com/threerings/opengl/util/Preloadable:com/threerings/util/DeepObject
+CL com/threerings/opengl/util/Preloadable:com/threerings/util/DeepObject
 CL com/threerings/opengl/util/Preloadable$Animation:com/threerings/opengl/util/Preloadable
 CL com/threerings/opengl/util/Preloadable$Config:com/threerings/opengl/util/Preloadable
 IF com/threerings/opengl/util/Preloadable$LoadableConfig
@@ -5457,7 +5457,7 @@ CL com/threerings/parlor/data/Table
 CL com/threerings/parlor/data/TableConfig:com/threerings/io/SimpleStreamableObject
 	desiredPlayerCount I
 	minimumPlayerCount I
-	teamMemberIndices [LSystem/Int32[];
+	teamMemberIndices [[I
 	privateTable Z
 IF com/threerings/parlor/data/TableLobbyObject
 CL com/threerings/parlor/data/TableMarshaller:com/threerings/presents/data/InvocationMarshaller
@@ -5467,7 +5467,7 @@ CL com/threerings/parlor/data/ToggleParameter:com/threerings/parlor/data/Paramet
 	name Ljava/lang/String;
 	tip Ljava/lang/String;
 CL com/threerings/parlor/game/client/GameConfigurator
-CL CL com/threerings/parlor/game/client/GameController:com/threerings/crowd/client/PlaceController
+CL com/threerings/parlor/game/client/GameController:com/threerings/crowd/client/PlaceController
 CL com/threerings/parlor/game/client/GameController$1
 CL com/threerings/parlor/game/client/GameController$2:com/threerings/crowd/client/PlaceController$DelegateOp
 CL com/threerings/parlor/game/client/GameController$3:com/threerings/crowd/client/PlaceController$DelegateOp
@@ -5525,9 +5525,9 @@ CL com/threerings/parlor/rating/server/Rating
 CL com/threerings/parlor/rating/server/RatingDelegate:com/threerings/parlor/game/server/GameManagerDelegate
 CL com/threerings/parlor/rating/server/RatingDelegate$1:com/samskivert/jdbc/RepositoryUnit
 	queueStamp J
-CL CL com/threerings/parlor/rating/server/RatingDelegate$2:com/samskivert/jdbc/RepositoryUnit
+CL com/threerings/parlor/rating/server/RatingDelegate$2:com/samskivert/jdbc/RepositoryUnit
 	queueStamp J
-CL CL com/threerings/parlor/rating/server/RatingDelegate$PlayerRating:com/threerings/parlor/rating/server/Rating
+CL com/threerings/parlor/rating/server/RatingDelegate$PlayerRating:com/threerings/parlor/rating/server/Rating
 	playerOid I
 	playerName Lcom/threerings/util/Name;
 	playerId I
@@ -5549,7 +5549,7 @@ CL com/threerings/parlor/server/TableManager
 CL com/threerings/parlor/server/TableManager$1
 CL com/threerings/parlor/server/TableManager$GameListener
 CL com/threerings/parlor/server/TableManager$UserListener
-CL IF com/threerings/parlor/server/TableProvider
+IF com/threerings/parlor/server/TableProvider
 IF com/threerings/parlor/tourney/client/TourneyService
 IF com/threerings/parlor/tourney/client/TourniesService
 CL com/threerings/parlor/tourney/data/EntryFee:com/threerings/io/SimpleStreamableObject
@@ -5630,7 +5630,7 @@ CL com/threerings/presents/client/Client$9:com/threerings/presents/client/Observ
 CL com/threerings/presents/client/Client$FailureType:java/lang/Enum
 EN com/threerings/presents/client/Client$FailureType$__Enum:System/Enum
 CL com/threerings/presents/client/Client$ServerSwitcher:com/threerings/presents/client/ClientAdapter
-CL CL com/threerings/presents/client/ClientAdapter
+CL com/threerings/presents/client/ClientAdapter
 CL com/threerings/presents/client/ClientCommunicator:com/threerings/presents/client/BlockingCommunicator
 CL com/threerings/presents/client/ClientCommunicator$PrefPortInterval:com/samskivert/util/Interval
 CL com/threerings/presents/client/ClientDObjectMgr
@@ -5740,7 +5740,7 @@ CL com/threerings/presents/data/TimeBaseObject:com/threerings/presents/dobj/DObj
 IF com/threerings/presents/dobj/AccessController
 CL com/threerings/presents/dobj/Accessor
 CL com/threerings/presents/dobj/Accessor$ByField:com/threerings/presents/dobj/Accessor
-CL CL com/threerings/presents/dobj/AttributeChangedEvent:com/threerings/presents/dobj/NamedEvent
+CL com/threerings/presents/dobj/AttributeChangedEvent:com/threerings/presents/dobj/NamedEvent
 	eventId J
 IF com/threerings/presents/dobj/AttributeChangeListener
 IF com/threerings/presents/dobj/ChangeListener
@@ -5750,16 +5750,16 @@ CL com/threerings/presents/dobj/DEvent
 	eventId J
 CL com/threerings/presents/dobj/DEvent$1
 CL com/threerings/presents/dobj/DObject
-CL IF com/threerings/presents/dobj/DObjectManager
+IF com/threerings/presents/dobj/DObjectManager
 CL com/threerings/presents/dobj/DSet
 CL com/threerings/presents/dobj/DSet$1
 CL com/threerings/presents/dobj/DSet$2:java/util/AbstractSet
 CL com/threerings/presents/dobj/DSet$3
 IF com/threerings/presents/dobj/DSet$Entry
 CL com/threerings/presents/dobj/DynamicListener
-CL CL com/threerings/presents/dobj/ElementUpdatedEvent:com/threerings/presents/dobj/NamedEvent
+CL com/threerings/presents/dobj/ElementUpdatedEvent:com/threerings/presents/dobj/NamedEvent
 	eventId J
-CL IF com/threerings/presents/dobj/ElementUpdateListener
+IF com/threerings/presents/dobj/ElementUpdateListener
 CL com/threerings/presents/dobj/EntryAddedEvent:com/threerings/presents/dobj/EntryEvent
 	eventId J
 CL com/threerings/presents/dobj/EntryEvent:com/threerings/presents/dobj/NamedEvent
@@ -5813,7 +5813,7 @@ CL com/threerings/presents/net/AuthRequest:com/threerings/presents/net/UpstreamM
 	messageId S
 	received J
 CL com/threerings/presents/net/AuthResponse:com/threerings/presents/net/DownstreamMessage
-	authdata LSystem/Object;
+	authdata Ljava/lang/Object;
 	messageId S
 	received J
 CL com/threerings/presents/net/AuthResponseData:com/threerings/presents/dobj/DObject
@@ -5867,7 +5867,7 @@ CL com/threerings/presents/net/SecureRequest:com/threerings/presents/net/AuthReq
 	messageId S
 	received J
 CL com/threerings/presents/net/SecureResponse:com/threerings/presents/net/AuthResponse
-	authdata LSystem/Object;
+	authdata Ljava/lang/Object;
 	messageId S
 	received J
 CL com/threerings/presents/net/ServiceCreds:com/threerings/presents/net/Credentials
@@ -5937,14 +5937,14 @@ CL com/threerings/presents/peer/server/PeerManager$11:com/samskivert/util/Chaine
 CL com/threerings/presents/peer/server/PeerManager$12
 CL com/threerings/presents/peer/server/PeerManager$13:com/samskivert/jdbc/WriteOnlyUnit
 	queueStamp J
-CL CL com/threerings/presents/peer/server/PeerManager$14:com/samskivert/jdbc/RepositoryUnit
+CL com/threerings/presents/peer/server/PeerManager$14:com/samskivert/jdbc/RepositoryUnit
 	queueStamp J
-CL CL com/threerings/presents/peer/server/PeerManager$15
+CL com/threerings/presents/peer/server/PeerManager$15
 CL com/threerings/presents/peer/server/PeerManager$16
 CL com/threerings/presents/peer/server/PeerManager$17
 CL com/threerings/presents/peer/server/PeerManager$2:com/samskivert/jdbc/WriteOnlyUnit
 	queueStamp J
-CL CL com/threerings/presents/peer/server/PeerManager$3
+CL com/threerings/presents/peer/server/PeerManager$3
 CL com/threerings/presents/peer/server/PeerManager$4
 CL com/threerings/presents/peer/server/PeerManager$5
 CL com/threerings/presents/peer/server/PeerManager$6
@@ -5970,15 +5970,15 @@ CL com/threerings/presents/peer/server/PeerManager$Stats
 	nodeActionsInvoked J
 	peerMessagesIn Ljava/util/concurrent/atomic/AtomicLong;
 	peerMessagesOut J
-CL CL com/threerings/presents/peer/server/PeerNode
+CL com/threerings/presents/peer/server/PeerNode
 	nodeobj Lcom/threerings/presents/peer/data/NodeObject;
 CL com/threerings/presents/peer/server/PeerNode$1:com/threerings/presents/client/Client
 CL com/threerings/presents/peer/server/PeerNode$NodeObjectListener
-CL IF com/threerings/presents/peer/server/PeerProvider
+IF com/threerings/presents/peer/server/PeerProvider
 CL com/threerings/presents/peer/server/PeerSession:com/threerings/presents/server/PresentsSession
 CL com/threerings/presents/peer/util/PeerUtil
 CL com/threerings/presents/peer/util/PeerUtil$1
-CL CL CL com/threerings/presents/server/AbstractSignalHandler
+CL com/threerings/presents/server/AbstractSignalHandler
 CL com/threerings/presents/server/Authenticator
 CL com/threerings/presents/server/Authenticator$1:com/samskivert/util/Invoker$Unit
 	queueStamp J
@@ -6007,8 +6007,8 @@ CL com/threerings/presents/server/InvocationDispatcher
 CL com/threerings/presents/server/InvocationException:java/lang/Exception
 CL com/threerings/presents/server/InvocationManager
 CL com/threerings/presents/server/InvocationManager$1
-CL IF com/threerings/presents/server/InvocationManager$Dispatcher
-CL IF com/threerings/presents/server/InvocationProvider
+IF com/threerings/presents/server/InvocationManager$Dispatcher
+IF com/threerings/presents/server/InvocationProvider
 CL com/threerings/presents/server/InvocationSender
 CL com/threerings/presents/server/LocalDObjectMgr:com/threerings/presents/server/PresentsDObjectMgr
 CL com/threerings/presents/server/LocalDObjectMgr$1
@@ -6058,7 +6058,7 @@ CL com/threerings/presents/server/PresentsDObjectMgr$Stats
 	maxQueueSize I
 	eventCount I
 CL com/threerings/presents/server/PresentsDObjectMgr$UnitProfile
-CL CL com/threerings/presents/server/PresentsInvoker:com/threerings/presents/server/ReportingInvoker
+CL com/threerings/presents/server/PresentsInvoker:com/threerings/presents/server/ReportingInvoker
 CL com/threerings/presents/server/PresentsInvoker$1
 CL com/threerings/presents/server/PresentsInvoker$BlockingUnit:com/samskivert/util/Invoker$Unit
 	run Z
@@ -6076,7 +6076,7 @@ CL com/threerings/presents/server/PresentsServer$1$1
 CL com/threerings/presents/server/PresentsServer$2
 CL com/threerings/presents/server/PresentsServer$PresentsModule:com/google/inject/AbstractModule
 CL com/threerings/presents/server/PresentsServer$PresentsServerModule:com/google/inject/AbstractModule
-CL CL com/threerings/presents/server/PresentsSession
+CL com/threerings/presents/server/PresentsSession
 CL com/threerings/presents/server/PresentsSession$1
 CL com/threerings/presents/server/PresentsSession$1$1
 CL com/threerings/presents/server/PresentsSession$2
@@ -6118,7 +6118,7 @@ CL com/threerings/presents/server/ReportManager
 CL com/threerings/presents/server/ReportManager$1
 IF com/threerings/presents/server/ReportManager$Reporter
 CL com/threerings/presents/server/ServiceAuthenticator:com/threerings/presents/server/ChainedAuthenticator
-CL CL com/threerings/presents/server/SessionFactory
+CL com/threerings/presents/server/SessionFactory
 CL com/threerings/presents/server/SessionFactory$1:com/threerings/presents/server/SessionFactory
 CL com/threerings/presents/server/SessionFactory$2:com/threerings/presents/server/SessionFactory
 CL com/threerings/presents/server/ShutdownManager
@@ -6134,7 +6134,7 @@ CL com/threerings/presents/server/SunSignalHandler$3
 CL com/threerings/presents/server/SunSignalHandler$4
 CL com/threerings/presents/server/TimeBaseProvider
 CL com/threerings/presents/util/ClassUtil
-CL CL com/threerings/presents/util/ConfirmAdapter:com/threerings/presents/util/IgnoreConfirmAdapter
+CL com/threerings/presents/util/ConfirmAdapter:com/threerings/presents/util/IgnoreConfirmAdapter
 CL com/threerings/presents/util/DatagramSequencer
 CL com/threerings/presents/util/DatagramSequencer$SendRecord
 	number I
@@ -6356,7 +6356,7 @@ CL com/threerings/resource/ResourceManager$ObservedResource
 	observers Lcom/samskivert/util/WeakObserverList;
 CL com/threerings/resource/ResourceManager$ResourceModifiedOp
 CL com/threerings/resource/ResourceManager$Unpacker:java/lang/Thread
-CL CL com/threerings/servlet/util/ConversionFailedException:java/lang/RuntimeException
+CL com/threerings/servlet/util/ConversionFailedException:java/lang/RuntimeException
 CL com/threerings/servlet/util/Converters
 CL com/threerings/servlet/util/Converters$1
 CL com/threerings/servlet/util/Converters$2
@@ -6364,11 +6364,11 @@ CL com/threerings/servlet/util/Converters$3
 CL com/threerings/servlet/util/Converters$4
 CL com/threerings/servlet/util/Converters$5
 CL com/threerings/servlet/util/FlashVarBuilder
-CL CL com/threerings/servlet/util/Log
+CL com/threerings/servlet/util/Log
 CL com/threerings/servlet/util/Parameters
 CL com/threerings/servlet/util/Parameters$1
-CL CL com/threerings/servlet/util/QueryBuilder
-CL CL com/threerings/stage/client/SceneColorizer
+CL com/threerings/servlet/util/QueryBuilder
+CL com/threerings/stage/client/SceneColorizer
 CL com/threerings/stage/client/SceneColorizer$1
 CL com/threerings/stage/client/StageSceneController:com/threerings/whirled/spot/client/SpotSceneController
 CL com/threerings/stage/client/StageScenePanel:com/threerings/miso/client/MisoScenePanel
@@ -6470,7 +6470,7 @@ CL com/threerings/stage/tools/editor/TestTileLoader
 CL com/threerings/stage/tools/editor/TestTileLoader$1
 CL com/threerings/stage/tools/editor/TestTileLoader$2
 CL com/threerings/stage/tools/editor/TestTileLoader$3:com/threerings/media/tile/SimpleCachingImageProvider
-CL CL com/threerings/stage/tools/editor/TileInfoPanel:javax/swing/JSplitPane
+CL com/threerings/stage/tools/editor/TileInfoPanel:javax/swing/JSplitPane
 CL com/threerings/stage/tools/editor/TileInfoPanel$1:javax/swing/DefaultListCellRenderer
 CL com/threerings/stage/tools/editor/TileInfoPanel$2:java/awt/event/KeyAdapter
 CL com/threerings/stage/tools/editor/TileInfoPanel$TileSetRecord
@@ -6491,8 +6491,8 @@ CL com/threerings/stage/tools/viewer/ViewerFrame$1:javax/swing/filechooser/FileF
 CL com/threerings/stage/tools/viewer/ViewerScenePanel:com/threerings/stage/client/StageScenePanel
 CL com/threerings/stage/tools/viewer/ViewerScenePanel$1:com/samskivert/swing/Controller
 CL com/threerings/stage/tools/xml/StageSceneParser:com/threerings/whirled/tools/xml/SceneParser
-CL CL com/threerings/stage/tools/xml/StageSceneWriter:com/threerings/whirled/tools/xml/SceneWriter
-CL CL com/threerings/stage/util/PlacementConstraints
+CL com/threerings/stage/tools/xml/StageSceneWriter:com/threerings/whirled/tools/xml/SceneWriter
+CL com/threerings/stage/util/PlacementConstraints
 CL com/threerings/stage/util/PlacementConstraints$1
 CL com/threerings/stage/util/PlacementConstraints$DirectionType
 	dir I
@@ -6539,7 +6539,7 @@ CL com/threerings/swing/PrefsTreeNode:javax/swing/tree/DefaultMutableTreeNode
 CL com/threerings/swing/PrintStreamDialog:javax/swing/JDialog
 CL com/threerings/swing/PrintStreamDialog$1:javax/swing/AbstractAction
 CL com/threerings/tools/FileSetTask
-CL CL com/threerings/tudey/client/cursor/AreaCursor:com/threerings/tudey/client/cursor/EntryCursor
+CL com/threerings/tudey/client/cursor/AreaCursor:com/threerings/tudey/client/cursor/EntryCursor
 CL com/threerings/tudey/client/cursor/AreaCursor$1:com/threerings/tudey/client/cursor/AreaCursor$Implementation
 CL com/threerings/tudey/client/cursor/AreaCursor$Implementation:com/threerings/expr/SimpleScope
 CL com/threerings/tudey/client/cursor/AreaCursor$Original:com/threerings/tudey/client/cursor/AreaCursor$Implementation
@@ -7497,8 +7497,8 @@ CL com/threerings/tudey/config/TileConfig$Original:com/threerings/tudey/config/T
 	height I
 	defaultEntrance Z
 	model Lcom/threerings/config/ConfigReference;
-	collisionFlags [LSystem/Int32[];
-	directionFlags [LSystem/Int32[];
+	collisionFlags [[I
+	directionFlags [[I
 	floorFlags I
 	mergeable Z
 	tags Lcom/threerings/tudey/config/TagConfig;
@@ -7536,7 +7536,7 @@ CL com/threerings/tudey/data/InputFrame:com/threerings/util/DeepObject
 CL com/threerings/tudey/data/ModifyEntriesUpdate:com/threerings/whirled/data/SceneUpdate
 	added [Lcom/threerings/tudey/data/TudeySceneModel$Entry;
 	updated [Lcom/threerings/tudey/data/TudeySceneModel$Entry;
-	removed [LSystem/Object;
+	removed [Ljava/lang/Object;
 IF com/threerings/tudey/data/package-info
 CL com/threerings/tudey/data/TudeyBodyObject:com/threerings/crowd/data/BodyObject
 	pawnId I
@@ -7637,7 +7637,7 @@ CL com/threerings/tudey/server/logic/ActionLogic$Random:com/threerings/tudey/ser
 CL com/threerings/tudey/server/logic/ActionLogic$RotateActor:com/threerings/tudey/server/logic/ActionLogic$Targeted
 CL com/threerings/tudey/server/logic/ActionLogic$ServerLog:com/threerings/tudey/server/logic/ActionLogic
 CL com/threerings/tudey/server/logic/ActionLogic$SetFlag:com/threerings/tudey/server/logic/ActionLogic$Targeted
-CL CL com/threerings/tudey/server/logic/ActionLogic$SetVariable:com/threerings/tudey/server/logic/ActionLogic$Targeted
+CL com/threerings/tudey/server/logic/ActionLogic$SetVariable:com/threerings/tudey/server/logic/ActionLogic$Targeted
 CL com/threerings/tudey/server/logic/ActionLogic$Signal:com/threerings/tudey/server/logic/ActionLogic$Targeted
 CL com/threerings/tudey/server/logic/ActionLogic$SpawnActor:com/threerings/tudey/server/logic/ActionLogic
 CL com/threerings/tudey/server/logic/ActionLogic$SpawnFacingActor:com/threerings/tudey/server/logic/ActionLogic$SpawnActor
@@ -7684,8 +7684,8 @@ CL com/threerings/tudey/server/logic/ConditionLogic$DateRange:com/threerings/tud
 CL com/threerings/tudey/server/logic/ConditionLogic$DistanceWithin:com/threerings/tudey/server/logic/ConditionLogic
 CL com/threerings/tudey/server/logic/ConditionLogic$Evaluate:com/threerings/tudey/server/logic/ConditionLogic
 CL com/threerings/tudey/server/logic/ConditionLogic$FlagSet:com/threerings/tudey/server/logic/ConditionLogic$Targeted
-CL CL com/threerings/tudey/server/logic/ConditionLogic$InstanceOf:com/threerings/tudey/server/logic/ConditionLogic$Targeted
-CL CL com/threerings/tudey/server/logic/ConditionLogic$Intersecting:com/threerings/tudey/server/logic/ConditionLogic
+CL com/threerings/tudey/server/logic/ConditionLogic$InstanceOf:com/threerings/tudey/server/logic/ConditionLogic$Targeted
+CL com/threerings/tudey/server/logic/ConditionLogic$Intersecting:com/threerings/tudey/server/logic/ConditionLogic
 CL com/threerings/tudey/server/logic/ConditionLogic$IntersectsScene:com/threerings/tudey/server/logic/ConditionLogic
 CL com/threerings/tudey/server/logic/ConditionLogic$Is:com/threerings/tudey/server/logic/ConditionLogic$Targeted
 CL com/threerings/tudey/server/logic/ConditionLogic$Limit:com/threerings/tudey/server/logic/ConditionLogic
@@ -7788,7 +7788,7 @@ CL com/threerings/tudey/server/logic/TargetLogic$DistanceSubset:com/threerings/t
 CL com/threerings/tudey/server/logic/TargetLogic$Excluding:com/threerings/tudey/server/logic/TargetLogic
 CL com/threerings/tudey/server/logic/TargetLogic$FarthestSubset:com/threerings/tudey/server/logic/TargetLogic$DistanceSubset
 CL com/threerings/tudey/server/logic/TargetLogic$InstanceOf:com/threerings/tudey/server/logic/TargetLogic
-CL CL com/threerings/tudey/server/logic/TargetLogic$Intersecting:com/threerings/tudey/server/logic/TargetLogic
+CL com/threerings/tudey/server/logic/TargetLogic$Intersecting:com/threerings/tudey/server/logic/TargetLogic
 CL com/threerings/tudey/server/logic/TargetLogic$NearestSubset:com/threerings/tudey/server/logic/TargetLogic$DistanceSubset
 CL com/threerings/tudey/server/logic/TargetLogic$Randomized:com/threerings/tudey/server/logic/TargetLogic
 CL com/threerings/tudey/server/logic/TargetLogic$RandomSubset:com/threerings/tudey/server/logic/TargetLogic$Subset
@@ -7808,7 +7808,7 @@ IF com/threerings/tudey/server/TudeySceneManager$ShutdownObserver
 CL com/threerings/tudey/server/TudeySceneManager$TickOp
 IF com/threerings/tudey/server/TudeySceneManager$TickParticipant
 CL com/threerings/tudey/server/TudeySceneManager$TickProfile
-CL CL com/threerings/tudey/server/TudeySceneMoveHandler:com/threerings/whirled/server/SceneMoveHandler
+CL com/threerings/tudey/server/TudeySceneMoveHandler:com/threerings/whirled/server/SceneMoveHandler
 IF com/threerings/tudey/server/TudeySceneProvider
 CL com/threerings/tudey/server/TudeySceneRegistry:com/threerings/whirled/server/SceneRegistry
 CL com/threerings/tudey/server/TudeySceneRegistry$1
@@ -7972,7 +7972,7 @@ CL com/threerings/tudey/tools/SceneEditor$8
 CL com/threerings/tudey/tools/SceneEditor$9:com/threerings/editor/tools/BatchValidateDialog
 CL com/threerings/tudey/tools/SceneEditor$SceneEditorPrefs:com/threerings/opengl/GlCanvasTool$CanvasToolPrefs
 CL com/threerings/tudey/tools/SceneResourcesTask
-CL CL com/threerings/tudey/tools/SceneValidatorTask:com/threerings/editor/tools/AbstractValidatorTask
+CL com/threerings/tudey/tools/SceneValidatorTask:com/threerings/editor/tools/AbstractValidatorTask
 CL com/threerings/tudey/tools/Selector:com/threerings/tudey/tools/EditorTool
 CL com/threerings/tudey/tools/Selector$Options:com/threerings/util/DeepObject
 	filter Lcom/threerings/tudey/tools/EditorTool$Filter;
@@ -8044,18 +8044,18 @@ CL com/threerings/util/DeepUtil
 CL com/threerings/util/DeepUtil$1:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$10:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$11:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$12:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$13:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$14:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$15:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$16:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$17:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$18:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$19:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$2:com/threerings/util/DeepUtil$ObjectHandler
+CL com/threerings/util/DeepUtil$12:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$13:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$14:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$15:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$16:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$17:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$18:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$19:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$2:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$20:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$21:com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$3:com/threerings/util/DeepUtil$ObjectHandler
+CL com/threerings/util/DeepUtil$21:com/threerings/util/DeepUtil$FieldHandler
+CL com/threerings/util/DeepUtil$3:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$4:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$5:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$6:com/threerings/util/DeepUtil$ObjectHandler
@@ -8063,11 +8063,11 @@ CL com/threerings/util/DeepUtil$7:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$8:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$9:com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$FieldHandler
-CL CL com/threerings/util/DeepUtil$ObjectHandler
+CL com/threerings/util/DeepUtil$ObjectHandler
 CL com/threerings/util/DeepUtil$ReflectiveObjectHandler:com/threerings/util/DeepUtil$ObjectHandler
-CL CL com/threerings/util/DefaultMap:com/google/common/collect/ForwardingMap
+CL com/threerings/util/DefaultMap:com/google/common/collect/ForwardingMap
 CL com/threerings/util/DefaultMap$1
-CL CL IF com/threerings/util/DirectionCodes
+IF com/threerings/util/DirectionCodes
 CL com/threerings/util/DirectionCodes$__Fields
 CL com/threerings/util/DirectionUtil
 IF com/threerings/util/Equalable
@@ -8080,7 +8080,7 @@ CL com/threerings/util/IdleTracker$2:com/samskivert/util/Interval
 CL com/threerings/util/IdleTracker$EventListener
 IF com/threerings/util/Inner
 CL com/threerings/util/keybd/Keyboard
-CL CL com/threerings/util/KeyboardManager
+CL com/threerings/util/KeyboardManager
 CL com/threerings/util/KeyboardManager$KeyInfo:com/samskivert/util/Interval
 IF com/threerings/util/KeyboardManager$KeyObserver
 CL com/threerings/util/KeyboardManager$KeyObserverOp
@@ -8095,7 +8095,7 @@ CL com/threerings/util/KeyTranslatorImpl$KeyRecord
 CL com/threerings/util/Log
 CL com/threerings/util/MessageBundle
 CL com/threerings/util/MessageManager
-CL CL com/threerings/util/MethodProfiler
+CL com/threerings/util/MethodProfiler
 CL com/threerings/util/MethodProfiler$1:java/lang/ThreadLocal
 CL com/threerings/util/MethodProfiler$2:com/google/common/cache/CacheLoader
 CL com/threerings/util/MethodProfiler$Method
@@ -8112,7 +8112,7 @@ CL com/threerings/util/Name:com/threerings/io/SimpleStreamableObject
 CL com/threerings/util/NoiseUtil
 CL com/threerings/util/RandomUtil
 CL com/threerings/util/ReflectionUtil
-CL IF com/threerings/util/ResourceContext
+IF com/threerings/util/ResourceContext
 CL com/threerings/util/ResourceUtil
 CL com/threerings/util/Resulting:com/samskivert/util/Invoker$Unit
 	queueStamp J
@@ -8128,7 +8128,7 @@ CL com/threerings/util/StreamableArrayIntSet:com/samskivert/util/ArrayIntSet
 CL com/threerings/util/StreamableArrayList:java/util/ArrayList
 CL com/threerings/util/StreamableEnumSet:java/util/AbstractSet
 CL com/threerings/util/StreamableEnumSet$1
-CL CL com/threerings/util/StreamableHashIntMap:com/samskivert/util/HashIntMap
+CL com/threerings/util/StreamableHashIntMap:com/samskivert/util/HashIntMap
 CL com/threerings/util/StreamableHashMap:java/util/HashMap
 CL com/threerings/util/StreamableHashSet:java/util/HashSet
 CL com/threerings/util/StreamableIntIntMap:com/samskivert/util/IntIntMap
@@ -8149,7 +8149,7 @@ CL com/threerings/util/ToolUtil$EditablePrefs$1:java/awt/event/ComponentAdapter
 CL com/threerings/util/ToolUtil$EditablePrefs$2
 CL com/threerings/util/ToolUtil$WrappedTransfer
 CL com/threerings/util/unsafe/Unsafe
-CL IF com/threerings/util/Validatable
+IF com/threerings/util/Validatable
 CL com/threerings/util/WeakObserverSet
 IF com/threerings/util/WeakObserverSet$ObserverOp
 CL com/threerings/util/WeakObserverSet$ObserverRef:java/lang/ref/WeakReference
@@ -8202,7 +8202,7 @@ CL com/threerings/whirled/server/AbstractSceneMoveHandler
 CL com/threerings/whirled/server/persist/DummySceneRepository
 IF com/threerings/whirled/server/persist/SceneRepository
 CL com/threerings/whirled/server/persist/SceneUpdateMarshaller
-CL CL com/threerings/whirled/server/SceneManager:com/threerings/crowd/server/PlaceManager
+CL com/threerings/whirled/server/SceneManager:com/threerings/crowd/server/PlaceManager
 CL com/threerings/whirled/server/SceneManager$1
 CL com/threerings/whirled/server/SceneManager$2:com/samskivert/jdbc/WriteOnlyUnit
 	queueStamp J
@@ -8286,8 +8286,8 @@ CL com/threerings/whirled/spot/tools/EditablePortal:com/threerings/whirled/spot/
 	targetSceneId I
 	targetPortalId S
 CL com/threerings/whirled/tools/xml/SceneParser
-CL CL com/threerings/whirled/tools/xml/SceneWriter
-CL CL com/threerings/whirled/util/NoSuchSceneException:java/lang/Exception
+CL com/threerings/whirled/tools/xml/SceneWriter
+CL com/threerings/whirled/util/NoSuchSceneException:java/lang/Exception
 IF com/threerings/whirled/util/SceneFactory
 CL com/threerings/whirled/util/UpdateList
 IF com/threerings/whirled/util/WhirledContext
@@ -8409,4 +8409,4 @@ CL com/threerings/expr/ScopedAttribute
 CL com/threerings/io/NotStreamableAttribute
 CL com/threerings/presents/annotation/EventQueueAttribute
 CL com/threerings/presents/annotation/TransportHintAttribute
-CL CL com/threerings/util/DeepAttribute
+CL com/threerings/util/DeepAttribute

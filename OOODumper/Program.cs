@@ -23,7 +23,7 @@ namespace OOODumper {
 				writer.WriteTypeAndMembers(type);
 			}
 
-			File.WriteAllText("./classdump.txt", sb.ToString());
+			File.WriteAllText("./OOOClassDump.txt", sb.ToString());
 		}
 	}
 }

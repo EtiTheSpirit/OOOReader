@@ -12,7 +12,7 @@ namespace OOOReader.Reader {
 
 	/// <summary>
 	/// A "shadow class" which is a generic container of arbitrary data that represents a Java class in the Clyde library. It cannot be extended.
-	/// It can represent all four major formfactors of java types: <see langword="class"/>, <see langword="interface"/>, <see langword="enum"/>, and <see langword="@interface"/>.
+	/// It can represent all four major formfactors of java types: <see langword="class"/>, <see langword="interface"/>, <see langword="enum"/>, and <see langword="@interface"/> (annotations).
 	/// </summary>
 	public sealed class ShadowClass {
 
@@ -49,7 +49,6 @@ namespace OOOReader.Reader {
 						string outer = Name[0..(Name.LastIndexOf('$') + 1)];
 						_OuterClass = TEMPLATES.GetValueOrDefault(outer);
 					}
-					_OuterClass = null;
 				}
 				return _OuterClass;
 			}
@@ -69,7 +68,7 @@ namespace OOOReader.Reader {
 			}
 		}
 		private ShadowClass? _BaseClass = null;
-		private string? BaseClassName = null;
+		private readonly string? BaseClassName = null;
 
 		/// <summary>
 		/// Returns a new instance of a known class (from OOOClassDump.txt). Raises <see cref="ArgumentException"/> if the class name is not known.
@@ -91,14 +90,17 @@ namespace OOOReader.Reader {
 
 		private static object? GetDefaultValueFromSignature(string signature) {
 			object? value = default;
-			bool makeArray = signature.StartsWith("[");
-			if (makeArray) {
+			int arrayDepth = 0;
+			while (signature.StartsWith('[')) {
+				arrayDepth++;
 				signature = signature[1..];
 			}
 			if (signature == "Z") {
 				value = default(bool);
 			} else if (signature == "B") {
 				value = default(byte);
+			} else if (signature == "C") {
+				value = default(char);
 			} else if (signature == "S") {
 				value = default(short);
 			} else if (signature == "I") {
@@ -110,11 +112,14 @@ namespace OOOReader.Reader {
 			} else if (signature == "D") {
 				value = default(double);
 			}
-			if (makeArray) {
+			if (arrayDepth > 0) {
 				if (value == null) {
 					if (TEMPLATES.TryGetValue(signature, out ShadowClass? template)) {
 						value = new ShadowClassArray(template);
 					} else {
+						if (signature.StartsWith('L') && signature.EndsWith(';')) {
+							signature = signature[1..^1];
+						}
 						value = new PendingShadowClassArray(signature);
 					}
 				} else {
@@ -126,6 +131,9 @@ namespace OOOReader.Reader {
 		}
 
 		static ShadowClass() {
+			TEMPLATES["java/lang/String"] = new ShadowClass("java/lang/String", null, ShadowType.Class);
+			TEMPLATES["java/lang/Object"] = new ShadowClass("java/lang/Object", null, ShadowType.Class);
+
 			string[] clsDump = File.ReadAllLines("./data/OOOClassDump.txt");
 			string? className = default;
 			foreach (string info in clsDump) {
@@ -149,10 +157,10 @@ namespace OOOReader.Reader {
 						ShadowClass shadow = TEMPLATES[className];
 						string[] fInfo = info[1..].Split(' ');
 						string name = fInfo[0];
-						string signature = fInfo[2];
+						string signature = fInfo[1];
 						shadow.Fields[name] = GetDefaultValueFromSignature(signature);
 					}
-					return;
+					continue;
 				}
 
 				className = info[3..];
@@ -184,7 +192,7 @@ namespace OOOReader.Reader {
 		private ShadowClass(ShadowClass other) : this(other.Name, other.BaseClassName, other.Type) {
 			other.Fields.CopyTo(Fields);
 
-			_OuterClass = other._OuterClass;
+			_OuterClass = other.OuterClass; // use the actual property so it's evaluated
 			CheckedForOuterClass = other.CheckedForOuterClass;
 
 			_BaseClass = other._BaseClass;
@@ -293,7 +301,7 @@ namespace OOOReader.Reader {
 		/// <summary>
 		/// A shadow class array. It enforces that its elements share the same template type.
 		/// </summary>
-		public class ShadowClassArray : IEnumerable<ShadowClass> {
+		public class ShadowClassArray {
 
 			/// <summary>
 			/// The template <see cref="ShadowClass"/> used as this array's element type.
@@ -301,12 +309,14 @@ namespace OOOReader.Reader {
 			public ShadowClass ElementType { get; }
 
 			/// <summary>
-			/// The number of elements in this array.
+			/// A reference to the array.
 			/// </summary>
-			public int Length => InternalArray.Count;
+			public Array Array => InternalArray;
 
-			private readonly List<ShadowClass> InternalArray;
+			//private readonly List<ShadowClass> InternalArray;
+			private readonly Array InternalArray;
 
+			/*
 			/// <summary>
 			/// Adds the given <see cref="ShadowClass"/> instance to this array.
 			/// </summary>
@@ -337,19 +347,21 @@ namespace OOOReader.Reader {
 					InternalArray[index] = value;
 				}
 			}
+			*/
 
-			public ShadowClassArray(ShadowClass template, int length = 0) {
+			public ShadowClassArray(ShadowClass template, int length = 0, int depth = 1) {
 				if (!template.IsTemplate) throw new ArgumentException("Unexpected parameter for 'template' (input ShadowClass is not a template)");
 				ElementType = template;
-				InternalArray = new List<ShadowClass>(length);
-				for (int i = 0; i < length; i++) {
-					InternalArray[i] = template.Clone();
+				int[] lengths = new int[depth];
+				for (int idx = 0; idx < depth; idx++) {
+					lengths[idx] = length;
+				}
+				InternalArray = Array.CreateInstance(typeof(ShadowClass), lengths);
+				for (int idx = 0; idx < InternalArray.Length; idx++) {
+					InternalArray.SetValue(template.Clone(), idx); // This works on all dimensions.
 				}
 			}
 
-			public IEnumerator<ShadowClass> GetEnumerator() => InternalArray.GetEnumerator();
-
-			IEnumerator IEnumerable.GetEnumerator() => InternalArray.GetEnumerator();
 		}
 
 		public enum ShadowType {

@@ -16,6 +16,9 @@ namespace OOODumper.LazySRGReimpl {
 		}
 
 		public void WriteTypeAndMembers(Type type) {
+			string fullName = type.FullName.Replace("+", "$").Replace(".", "/"); // For java
+			if (fullName.StartsWith("__") || fullName.Length == 0) return;
+			if (fullName.EndsWith("__<CallerID>")) return;
 			if (type.IsClass) {
 				Writer.Write("CL ");
 			} else if (type.IsInterface) {
@@ -27,13 +30,12 @@ namespace OOODumper.LazySRGReimpl {
 			} else {
 				Console.WriteLine("Unknown type signature for " + type);
 			}
-			string fullName = type.FullName.Replace("+", "$").Replace(".", "/"); // For java
-			if (fullName.StartsWith("__") || fullName.Length == 0) return;
-			if (fullName.EndsWith("__<CallerID>")) return;
+			if (fullName == "System/Object") fullName = "java/lang/Object";
 			Writer.Write(fullName);
 
 			if (type.BaseType != null && type.BaseType != typeof(object) && type.BaseType != typeof(java.lang.Object) && type.BaseType != typeof(ikvm.@internal.AnnotationAttributeBase)) {
 				string otherFullName = type.BaseType.FullName.Replace("+", "$").Replace(".", "/"); // For java
+				if (otherFullName == "System/Object") otherFullName = "java/lang/Object";
 				if (otherFullName.StartsWith("__") || otherFullName.Length == 0) return;
 				Writer.WriteLine(":" + otherFullName);
 			} else {
@@ -66,8 +68,7 @@ namespace OOODumper.LazySRGReimpl {
 			} else {
 				return;
 			}
-			bool array = t.IsArray;
-			if (array) {
+			while (t.IsArray) {
 				t = t.GetElementType()!;
 				Writer.Write('[');
 			}
@@ -91,7 +92,9 @@ namespace OOODumper.LazySRGReimpl {
 				Writer.Write("Ljava/lang/String;");
 			} else {
 				Writer.Write('L');
-				Writer.Write(t.FullName.Replace("+", "$").Replace(".", "/"));
+				string name = t.FullName;
+				if (name == "System.Object") name = "java.lang.Object";
+				Writer.Write(name.Replace("+", "$").Replace(".", "/"));
 				Writer.Write(';');
 			}
 			Writer.WriteLine();
