@@ -1,0 +1,1525 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OOOReader</name>
+    </assembly>
+    <members>
+        <member name="T:OOOReader.Core">
+            <summary>
+            The main entrypoint of the system.
+            </summary>
+        </member>
+        <member name="T:OOOReader.ThreeRings.ClydeFile">
+            <summary>
+            Represents a .dat file for Clyde.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.ClydeFile.MAGIC">
+            <summary>
+            The magic number used in Clyde files, <c>0xFACEAF0E</c>.
+            </summary>
+            <inheritdoc cref="T:OOOReader.Utility.Attributes.BigEndianAttribute"/>
+        </member>
+        <member name="F:OOOReader.ThreeRings.ClydeFile.FLAG_COMPRESSED">
+            <summary>
+            A flag used to signify that a file is compressed.
+            </summary>
+            <inheritdoc cref="T:OOOReader.Utility.Attributes.BigEndianAttribute"/>
+        </member>
+        <member name="F:OOOReader.ThreeRings.ClydeFile.BOOTSTRAP_CLASSES">
+            <summary>
+            The bootstrap classes for the default class map. The order of this is specific: bool, byte, char, double, float, int, long, short
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.ClydeFile.SOFT_NULL">
+            <summary>
+            Represents a null entry in the object map.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.ClydeFile.ClydeExportableClassDump">
+            <summary>
+            A mapping from fully qualified java class name to a list of its exportable fields. Intended for use in missing Clyde classes.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.Reader">
+            <summary>
+            The <see cref="T:System.IO.BinaryReader"/> used for reading data from this file.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.XMLReader">
+            <summary>
+            The <see cref="T:System.Xml.XmlReader"/> used for reading data from this file, if it's an XML file.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.IDReader">
+            <summary>
+            The <see cref="P:OOOReader.ThreeRings.ClydeFile.IDReader"/> used for reading class IDs and segment lengths from Clyde files when the file is binary.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.Version">
+            <summary>
+            The version of this file.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.IsBinary">
+            <summary>
+            This is <see langword="true"/> if the file is using binary, and <see langword="false"/> if the file is using XML.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.IDCache">
+            <summary>
+            A cache of IDs to what type of object it is. Equivalent to <c>_objects</c> in BinaryImporter
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.Fields">
+            <summary>
+            A cache of all field names to their associated <see cref="T:OOOReader.Utility.Shadows.FieldData"/>
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.WrappersByName">
+            <summary>
+            A lookup to <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>s by the type name.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.WrappersByClass">
+            <summary>
+            A lookup to <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>s by the actual type they encompass.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.Classes">
+            <summary>
+            All pre-existing <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>s by their ID.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.ClassData">
+            <summary>
+            A map from <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>s to their corresponding <see cref="P:OOOReader.ThreeRings.ClydeFile.ClassData"/>
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.StringClass">
+            <summary>
+            A reference to the <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/> around <see cref="T:System.String"/>.
+            </summary>
+        </member>
+        <member name="P:OOOReader.ThreeRings.ClydeFile.ObjectClass">
+            <summary>
+            A reference to the <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/> around <see cref="T:System.Object"/>.
+            </summary>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.#ctor(System.IO.Stream)">
+            <summary>
+            Given an input stream, this will create a <see cref="T:OOOReader.ThreeRings.ClydeFile"/>.
+            </summary>
+            <param name="inputStream"></param>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.ReadObject">
+            <summary>
+            Returns the contained Clyde data as its object type.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.ReadClass">
+            <summary>
+            Reads a class from the stream and returns its wrapper.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.Read(OOOReader.Utility.Shadows.ClassWrapper)">
+            <summary>
+            Reads an object of the type described by a given <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>
+            </summary>
+            <param name="wrapper"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.Read(System.Type)">
+            <summary>
+            Reads an object of the given type.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.Read``1(System.String,``0)">
+            <summary>
+            Attempts to read the given type arbitrarily from this Clyde file. This is mostly to encompass the many overloads of <c>read</c> as seen in Clyde's BinaryImporter class.<para/>
+            Set <c>T</c> to <see cref="T:System.Object"/> for complete compatibility.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="fieldName"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.ReadInto``1(System.String,OOOReader.Utility.Shadows.ShadowClass,``0)">
+            <summary>
+            A variant of <see cref="M:OOOReader.ThreeRings.ClydeFile.Read``1(System.String,``0)"/> that directly puts the value into the given <paramref name="shadow"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="fieldName"></param>
+            <param name="shadow"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.DefaultReadFields(OOOReader.Utility.Shadows.ShadowClass)">
+            <summary>
+            Using an <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller"/> for the given <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/>, this reads its fields using the default method rather than any custom-defined ReadFields methods.
+            </summary>
+            <param name="shadow"></param>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.GetClassWrapper(System.String,System.Byte)">
+            <summary>
+            Returns a cached <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/> from the given fully-qualified type name and class flags, or creates a new one if it is not in the cache.
+            </summary>
+            <param name="name"></param>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.GetClassWrapper(System.Type)">
+            <summary>
+            Returns a cached <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/> associated with the given type, or creates a new one if it is not in the cache.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.ThreeRings.ClydeFile.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.ThreeRings.Clyde.ClassFlags">
+            <summary>
+            When reading classes from a Clyde file, these flags will be present on a byte in the file.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClassFlags.None">
+            <summary>
+            Represents no flags.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClassFlags.Final">
+            <summary>
+            This flag indicates the class is final, or in C#, <see langword="sealed"/>.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClassFlags.Inner">
+            <summary>
+            This flag indicates the class is an inner class.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClassFlags.Collection">
+            <summary>
+            This flag indicates the stored class is a non-exportable collection, such as a <see cref="T:System.Collections.Generic.List`1"/>.
+            </summary>
+            <remarks>
+            "exportable" refers to an annotation (attribute) that is used in the Clyde library. This effectively means this collection is an external type that isn't part of Clyde.
+            </remarks>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClassFlags.Map">
+            <summary>
+            This flag indicates the stored class is a non-exportable map, such as a <see cref="T:System.Collections.Generic.Dictionary`2"/>.
+            </summary>
+            <remarks>
+            "exportable" refers to an annotation (attribute) that is used in the Clyde library. This effectively means this collection is an external type that isn't part of Clyde.
+            </remarks>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClassFlags.Multi">
+            <summary>
+            This flag indicates that, granted <see cref="F:OOOReader.ThreeRings.Clyde.ClassFlags.Collection"/> or <see cref="F:OOOReader.ThreeRings.Clyde.ClassFlags.Map"/> are present, this is a multi- instance of those classes (Multiset (from which <see cref="T:System.Collections.Generic.List`1"/> will work just fine, considering it already supports duplicates/<see langword="null"/>) or Multimap, which as been implemented under <see cref="T:OOOReader.Utility.Collection.Multimap`2"/>).
+            </summary>
+        </member>
+        <member name="T:OOOReader.ThreeRings.Clyde.ClydeVersion">
+            <summary>
+            Represents a clyde model version.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClydeVersion.XML">
+            <summary>
+            The Clyde file is an XML, which has no associated version.
+            </summary>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClydeVersion.CLASSIC">
+            <summary>
+            The version integer used in Clyde files for original files created with the public debut of Clyde.
+            </summary>
+            <inheritdoc cref="T:OOOReader.Utility.Attributes.BigEndianAttribute"/>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClydeVersion.INTERMEDIATE">
+            <summary>
+            The version integer used in Clyde files for files in the process of translation from <see cref="F:OOOReader.ThreeRings.Clyde.ClydeVersion.CLASSIC"/> to <see cref="F:OOOReader.ThreeRings.Clyde.ClydeVersion.VARINT"/>
+            </summary>
+            <inheritdoc cref="T:OOOReader.Utility.Attributes.BigEndianAttribute"/>
+        </member>
+        <member name="F:OOOReader.ThreeRings.Clyde.ClydeVersion.VARINT">
+            <summary>
+            The version integer used in Clyde files leveraging modern <strong>Var</strong>iable Size <strong>Int</strong>egers to save file size.
+            </summary>
+            <inheritdoc cref="T:OOOReader.Utility.Attributes.BigEndianAttribute"/>
+        </member>
+        <member name="T:OOOReader.Utility.Attributes.BigEndianAttribute">
+            <summary>
+            Denotes a field or property is written as if it's using big endian byte order. Any constant values should have their byte order flipped when compared to a value read in a stream that is big endian.
+            </summary>
+            <remarks>
+            <strong>This field is written in big endian byte order</strong>, and should be flipped when compared to any values read from a stream that are big endian (or the value read from the stream should be flipped)
+            </remarks>
+        </member>
+        <member name="T:OOOReader.Utility.Attributes.ClassNameAttribute">
+            <summary>
+            An attribute used when binding a C# class to a Clyde classname to provide its ReadFields method in a very minimal manner as to satisfy the <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller"/>.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Attributes.ClassNameAttribute.ClassName">
+            <summary>
+            The class name of this equivalent class in Clyde.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Attributes.ClassNameAttribute.BoundType">
+            <summary>
+            The type this is bound to.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Attributes.ClassNameAttribute.ReadFields">
+            <summary>
+            The <see cref="P:OOOReader.Utility.Attributes.ClassNameAttribute.ReadFields"/> method.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Attributes.ClassNameAttribute.#ctor(System.Type,System.String)">
+            <summary>
+            Construct a new <see cref="T:OOOReader.Utility.Attributes.ClassNameAttribute"/> for this type, which binds its <c>ReadFields</c> method to the given 
+            </summary>
+            <param name="boundType">The type that this attribute is a part of.</param>
+            <param name="clsName"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Attributes.ClassNameAttributeHelper.Find(System.String)">
+            <summary>
+            Returns the <see cref="T:OOOReader.Utility.Attributes.ClassNameAttribute"/> that implements the given Clyde class.
+            </summary>
+            <param name="clydeClassName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Collection.Multimap`2">
+            <summary>
+            An implementation of <a href="https://guava.dev/releases/19.0/api/docs/com/google/common/collect/Multimap.html"><c>com.google.common.collect.Multimap</c></a> in .NET 5<para/>
+            The basic gist is that one key can be associated with multiple values, but properties like <see cref="P:OOOReader.Utility.Collection.Multimap`2.Count"/> return the number of <em>values</em>, not the number of <em>keys</em>.
+            </summary>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.Count">
+            <summary>
+            Returns the number of distinct values in this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/>.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.IsReadOnly">
+            <summary>
+            Returns whether or not this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> is read only.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.Empty">
+            <summary>
+            Whether or not this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> contains no keys nor values.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.Keys">
+            <summary>
+            Returns all keys in this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> without collapsing duplicates. This means that if the map has multiple values associated with it, a key will be returned multiple times.<para/>
+            <strong>This is not compliant with the original Multimap API.</strong> The original API made the returned collection mutable so that it was <em>write-through</em> (changing the collection changed the Multimap it came from). If this behavior is necessary, use AsMap instead.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.UniqueKeys">
+            <summary>
+            Similar to <see cref="P:OOOReader.Utility.Collection.Multimap`2.Keys"/>, but this collapses duplicate keys. If a key has multiple values associated with it, it will only be present once in the returned <see cref="T:System.Collections.Generic.IReadOnlyCollection`1"/>. It is identical to the <c>keySet()</c> method.<para/>
+            <strong>This is not compliant with the original Multimap API.</strong> The original API made the returned collection mutable so that it was <em>write-through</em> (changing the collection changed the Multimap it came from). If this behavior is necessary, use AsMap instead.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.Values">
+            <summary>
+            Returns a collection of every <typeparamref name="TValue"/> in this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> without collapsing duplicates (so that <see cref="P:OOOReader.Utility.Collection.Multimap`2.Values"/>.Count == <see cref="P:OOOReader.Utility.Collection.Multimap`2.Count"/>)<para/>
+            <strong>This is not compliant with the original Multimap API.</strong> The original API made the returned collection mutable so that it was <em>write-through</em> (changing the collection changed the Multimap it came from). If this behavior is necessary, use AsMap instead.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.Entries">
+            <summary>
+            Returns all key/value mappings - including with duplicate keys. If a key has multiple values associated with it, that key will simply be included multiple times.<para/>
+            <strong>This is not compliant with the original Multimap API.</strong> The original API made the returned collection mutable so that it was <em>write-through</em> (changing the collection changed the Multimap it came from). If this behavior is necessary, use AsMap instead.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.AsMap">
+            <returns>This <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> as an <see cref="T:System.Collections.IDictionary"/>&lt;<typeparamref name="TKey"/>, <see cref="T:System.Collections.ICollection"/>&lt;<typeparamref name="TValue"/>&gt;&gt;. Similarly to the original Multimap implementation in Java, this is a <em>write-through</em> view: changes to the result of this method will affect this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> as well.</returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.Clear">
+            <summary>
+            Removes all items from the <see cref="T:OOOReader.Utility.Collection.Multimap`2"/>.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.Contains(`0,`1)">
+            <remarks>
+            This is equivalent to the <c>containsEntry(Object, Object)</c> method in the original Java implementation.
+            </remarks>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns><see langword="true"/> if this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> contains the given key, and if the given value is associated with said key (because the key may be registered, but the value may not be associated with the key).</returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.ContainsKey(`0)">
+            <param name="key"></param>
+            <returns><see langword="true"/> if this key has at least one value associated with it.</returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.ContainsValue(`1)">
+            <summary>
+            Returns <see langword="true"/> if the given value can be found anywhere in this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/>
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OOOReader.Utility.Collection.Multimap`2.Item(`0)">
+            <summary>
+            <see langword="get"/> returns an instance of <see cref="T:System.Collections.ICollection"/>&lt;<typeparamref name="TValue"/>&gt; associated with the given <typeparamref name="TKey"/> <paramref name="key"/>. If no value is associated with this key, an empty collection is returned.<para/>
+            <see langword="set"/> accepts a single instance of <typeparamref name="TValue"/> and associates it with the given <typeparamref name="TKey"/> <paramref name="key"/>, emulating the behavior of <c>put</c>. It also accepts an <see cref="T:System.Collections.ICollection"/>&lt;<typeparamref name="TValue"/>&gt;, emulating the behavior of <c>putAll</c>.<para/>
+            If a more concrete methodology is preferred rather than this hybrid behavior, it is advised to use <see cref="M:OOOReader.Utility.Collection.Multimap`2.Get(`0)"/>, <see cref="M:OOOReader.Utility.Collection.Multimap`2.Put(`0,`1)"/>, and <see cref="M:OOOReader.Utility.Collection.Multimap`2.PutAll(`0,System.Collections.Generic.IEnumerable{`1})"/>
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.Remove(`0,`1)">
+            <summary>
+            Removes the given <paramref name="value"/> from this <see cref="T:OOOReader.Utility.Collection.Multimap`2"/> if it is found under <paramref name="key"/>.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns><see langword="true"/> if the value was successfully removed.</returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.RemoveAll(`0)">
+            <summary>
+            Removes all values associated with this key.
+            </summary>
+            <param name="key"></param>
+            <returns>The <see cref="T:System.Collections.Generic.ICollection`1"/> of values associated with this key, or an empty collection if no such key existed.</returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.ReplaceValues(`0,System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            Replaces all values associated with the given key to the given values.
+            </summary>
+            <param name="key"></param>
+            <param name="newValues"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.Get(`0)">
+            <summary>
+            Returns a <em>write-through</em> collection of all values associated with the given key. Modifying this collection will modify the <see cref="T:OOOReader.Utility.Collection.Multimap`2"/>.<para/>
+            Unlike traditional C# behavior, this will return an empty collection if the key does not exist. It will never return <see langword="null"/> nor throw <see cref="T:System.Collections.Generic.KeyNotFoundException"/>.
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.Put(`0,`1)">
+            <summary>
+            Associates the given value to the given key.
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.PutAll(`0,System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            Associates all items from <paramref name="values"/> into <paramref name="key"/>.
+            </summary>
+            <param name="key"></param>
+            <param name="values"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{TKey,System#Collections#Generic#ICollection{TValue}}}#GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Collection.Multimap`2.GetEnumerator">
+            <summary>
+            Returns an <see cref="T:System.Collections.IEnumerator"/> that goes over all keys and values. Keys may be duplicates in this.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Data.ClydeNameAttribute">
+            <summary>
+            Used for C# code compliance in writing. Allows a special name to be given to fields, this name is intended to be that of which is present in Clyde.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.ClydeNameAttribute.ClydeName">
+            <summary>
+            The name of this field as seen in the Java source of Clyde.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.ClydeNameAttribute.#ctor(System.String)">
+            <summary>
+            Construct a new <see cref="T:OOOReader.Utility.Data.ClydeNameAttribute"/> to denote that this field's name in the Java source of Clyde is the given string.
+            </summary>
+            <param name="nameInClyde">The name of this field as seen in in Clyde's Java source.</param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.ClydeNameAttribute.GetClydeNameOf(System.Reflection.FieldInfo)">
+            <summary>
+            Returns the Clyde-name of this field if it has this attribute (<see cref="T:OOOReader.Utility.Data.ClydeNameAttribute"/>), or the field's literal name if it does not.
+            </summary>
+            <param name="field"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Data.IDReader">
+            <summary>
+            An abstract class representing a helper to read class IDs and segment lengths from Clyde files.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.IDReader.BaseStream">
+            <summary>
+            The underlying <see cref="T:System.IO.BinaryReader"/> this <see cref="T:OOOReader.Utility.Data.IDReader"/> reads from.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.ReadID">
+            <summary>
+            Reads an ID from the stream.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.ReadNextSegmentLength">
+            <summary>
+            Returns the length of the next component from the Clyde file.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Instantiates a new <see cref="T:OOOReader.Utility.Data.IDReader"/> with the given underlying <see cref="T:System.IO.BinaryReader"/>.
+            </summary>
+            <param name="baseStream"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.For(System.IO.BinaryReader,OOOReader.ThreeRings.Clyde.ClydeVersion)">
+            <summary>
+            Given the underlying <see cref="T:System.IO.BinaryReader"/> as well as the <see cref="T:OOOReader.ThreeRings.Clyde.ClydeVersion"/> acquired from a Clyde file, this will return a new
+            instance of the appropriate <see cref="T:OOOReader.Utility.Data.IDReader"/>.
+            </summary>
+            <param name="baseStream"></param>
+            <param name="version"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.Dispose">
+            <summary>
+            Destroys this <see cref="T:OOOReader.Utility.Data.IDReader"/>, closing the underlying <see cref="P:OOOReader.Utility.Data.IDReader.BaseStream"/>.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.IDReader.VarIntReader">
+            <summary>
+            Reads IDs and segment lengths in the <see cref="T:OOOReader.Utility.Data.VarInt"/> format.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.VarIntReader.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Instantiates a new <see cref="T:OOOReader.Utility.Data.IDReader.VarIntReader"/> with the given underlying <see cref="T:System.IO.BinaryReader"/>.
+            </summary>
+            <param name="baseStream"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.VarIntReader.ReadID">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.VarIntReader.ReadNextSegmentLength">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.Utility.Data.IDReader.IntermediateReader">
+            <summary>
+            Reads IDs in the <see cref="T:OOOReader.Utility.Data.VarInt"/> format, but segment lengths as <see langword="int"/>.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.IntermediateReader.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Instantiates a new <see cref="T:OOOReader.Utility.Data.IDReader.IntermediateReader"/> with the given underlying <see cref="T:System.IO.BinaryReader"/>.
+            </summary>
+            <param name="baseStream"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.IntermediateReader.ReadID">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.IntermediateReader.ReadNextSegmentLength">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.Utility.Data.IDReader.ClassicReader">
+            <summary>
+            Reads IDs in an ordered-use format, where all IDs up to 255 are written as single <see langword="byte"/>s, all IDs from 256 to 65535 are written as <see langword="ushort"/>, and IDs beyond 65535 are written as <see langword="int"/>. Segment lengths are read as <see langword="int"/>.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.ClassicReader.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Instantiates a new <see cref="T:OOOReader.Utility.Data.IDReader.ClassicReader"/> with the given underlying <see cref="T:System.IO.BinaryReader"/>.
+            </summary>
+            <param name="baseStream"></param>
+        </member>
+        <member name="F:OOOReader.Utility.Data.IDReader.ClassicReader.HighestID">
+            <summary>
+            The highest id read thus far.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.ClassicReader.ReadID">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.IDReader.ClassicReader.ReadNextSegmentLength">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller">
+            <summary>
+            A very incomplete implementation of Clyde's ObjectMarshaller type designed for specifically reading data out of Clyde files. Has no support for writing.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Reflection.ObjectMarshaller.ShadowReader">
+            <summary>
+            A ReadFields method defiled for a given ShadowClass implementation, if one exists. See <see cref="T:OOOReader.Utility.Attributes.ClassNameAttribute"/> for more information.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Reflection.ObjectMarshaller.StandardReader">
+            <summary>
+            A ReadFields method on a given defined object, if one exists.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Reflection.ObjectMarshaller.For(System.Type)">
+            <summary>
+            Returns a new or cached <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller"/> for the given <see cref="T:System.Type"/>
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Reflection.ObjectMarshaller.ForShadowClass(OOOReader.Utility.Shadows.ShadowClass)">
+            <summary>
+            Gets or creates an <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller"/> specifically for a <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/>.
+            </summary>
+            <param name="shadow"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Reflection.ObjectMarshaller.ReadFields(System.Object,OOOReader.ThreeRings.ClydeFile,System.Boolean)">
+            <summary>
+            Reads the fields of the given object out of <paramref name="source"/> and populates that data into <paramref name="of"/>.
+            </summary>
+            <param name="of"></param>
+            <param name="source"></param>
+            <param name="useReflectedReaderMethod">If true, a method of <paramref name="of"/> named "ReadFields", if it exists and accepts a <see cref="T:OOOReader.ThreeRings.ClydeFile"/>, will be called to read the fields instead of by using the internal registry and the default methods.</param>
+            <exception cref="T:System.NotImplementedException">If <see cref="P:OOOReader.Utility.Data.Reflection.ObjectMarshaller.ShadowReader"/> is <see langword="null"/> and/or <paramref name="useReflectedReaderMethod"/> is <see langword="false"/></exception>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData.Name">
+            <summary>
+            The name of this field as percieved by the Clyde library implementation. This will be a value different than <see cref="P:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData.CSharpName"/> if the field has a <see cref="T:OOOReader.Utility.Data.ClydeNameAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData.CSharpName">
+            <summary>
+            The C# name of this Field as defined in source code.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData.Marshaller">
+            <summary>
+            The <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller"/> that created this <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData"/>.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData.#ctor(OOOReader.Utility.Data.Reflection.ObjectMarshaller,System.Reflection.FieldInfo)">
+            <summary>
+            Create a new <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData"/> for the given <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller"/>, representing the given <see cref="T:System.Reflection.FieldInfo"/>.
+            </summary>
+            <param name="marshaller"></param>
+            <param name="field"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData.SetFrom(System.Object,OOOReader.ThreeRings.ClydeFile)">
+            <summary>
+            Sets the value of this field (on an instance of <paramref name="obj"/>) to the value read from <paramref name="source"/>.
+            </summary>
+            <param name="obj"></param>
+            <param name="source"></param>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller.ShadowField">
+            <summary>
+            A derived variant of <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData"/> designed specifically for <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/> instances.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Reflection.ObjectMarshaller.ShadowField.#ctor(OOOReader.Utility.Data.Reflection.ObjectMarshaller,System.String)">
+            <summary>
+            Create a new <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller.FieldData"/> for the given <see cref="T:OOOReader.Utility.Data.Reflection.ObjectMarshaller"/>, representing a field with given <paramref name="fieldName"/>.
+            </summary>
+            <param name="marshaller"></param>
+            <param name="fieldName"></param>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Stream.IEncodable">
+            <summary>
+            Represents an Encodable class. As stated by Clyde, <em>An interface for objects that can be encoded to and decoded from strings and binary streams.</em>
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Data.Stream.IEncodable.ENCODABLE_TYPE">
+            <summary>
+            This interface's type, as it is referenced frequently.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.IEncodable.EncodeToString">
+            <summary>
+            Returns a string representation of this object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.IEncodable.DecodeFromString(System.String)">
+            <summary>
+            Populates this object from the given string.
+            </summary>
+            <param name="str"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.IEncodable.EncodeToStream(System.IO.BinaryWriter)">
+            <summary>
+            Writes the contents of this object to the given <see cref="T:System.IO.BinaryWriter"/>
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.IEncodable.DecodeFromStream(System.IO.BinaryReader)">
+            <summary>
+            Reads the contents of this object from the given <see cref="T:System.IO.BinaryReader"/>
+            </summary>
+            <param name="reader"></param>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Stream.IExportable">
+            <summary>
+            An implementation of Clyde's "Exportable" interface. Denotes something that means it can be written and read from through Clyde's Importer/Exporter abstract classes.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Stream.IStreamer`1">
+            <summary>
+            As described by Clyde, <em>Writes objects to and reads objects from a binary stream.</em><para/>
+            Except this one doesn't write. Only reads.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.IStreamer`1.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads a value of this type from the given <see cref="T:System.IO.BinaryReader"/>
+            </summary>
+            <param name="reader"></param>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Stream.Streamers">
+            <summary>
+            Provides <see cref="T:OOOReader.Utility.Data.Stream.IStreamer`1"/> instances for a given type.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.Streamers.GetStreamer``1">
+            <summary>
+            Returns a streamer appropriate for the given type, or <see langword="null"/> if no such streamer exists.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.Streamers.GetStreamer(System.Type)">
+            <summary>
+            Returns a streamer appropriate for the given type as an <c>IStreamer&lt;object&gt;</c>. Since streamers are covariant, this can be cast back into the desired type.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.Streamers.EncodableStreamer.CreateFor``1">
+            <summary>
+            Should be called as <c>EncodableStreamer&lt;IEncodable&gt;.CreateFor&lt;TEncodable&gt;()</c>.<para/>
+            This allows creating a new <see cref="T:OOOReader.Utility.Data.Stream.Streamers.EncodableStreamer`1"/> when <typeparamref name="TEncodable"/> is known by the developer to extend <see cref="T:OOOReader.Utility.Data.Stream.IEncodable"/>, but it is not constrained as such.<para/>
+            Note that casting this object to an instance of <see cref="T:OOOReader.Utility.Data.Stream.Streamers.EncodableStreamer`1"/> will fail, as <see cref="T:OOOReader.Utility.Data.Stream.IStreamer`1"/> is not covariant.
+            </summary>
+            <typeparam name="TEncodable">A type that the developer knows is <see cref="T:OOOReader.Utility.Data.Stream.IEncodable"/>, but the code does not.</typeparam>
+            <returns>A new instance of <see cref="T:OOOReader.Utility.Data.Stream.Streamers.EncodableStreamer`1"/> as an object.</returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Stream.Streamers.EncodableStreamer.CreateFor(System.Type)">
+            <summary>
+            Creates a generic <see cref="T:OOOReader.Utility.Data.Stream.IStreamer`1"/> using type <see cref="T:OOOReader.Utility.Data.Stream.IEncodable"/> as its export type, using the covariance to its advantage..
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="F:OOOReader.Utility.Data.Stream.Streamers.EncodableStreamer`1.EncodableType">
+            <summary>
+            The type of the <see cref="T:OOOReader.Utility.Data.Stream.IEncodable"/> that this encompasses.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.IVariant">
+            <summary>
+            A container for a value whose type could be a number of possible options that are not necessarily interchangeable nor convertible, such as a value that could either be <see langword="string"/> or <see langword="int"/>.<para/>
+            Based on Roblox's Variant&lt;...&gt; class, which is used in their custom Lua implementation, Luau.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.IVariant.ArgIndex">
+            <summary>
+            The index of type argument that this variant contains.<br/>
+            <em>This is a one-based value</em>, that is, the number that this is will reflect the property it's set to. <see cref="P:OOOReader.Utility.Data.Variant.IVariant.ArgIndex"/>=1 means Value<strong>1</strong> is in use, <see cref="P:OOOReader.Utility.Data.Variant.IVariant.ArgIndex"/>=2 means Value<strong>2</strong> is in use, so on.
+            <br/><br/>
+            <see cref="P:OOOReader.Utility.Data.Variant.IVariant.ArgIndex"/>=0 means this variant is malformed.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.IVariant`2">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/> or a(n) <typeparamref name="T2"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.IVariant`2.Value1">
+            <summary>
+            The <typeparamref name="T1"/> component of this <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/>.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.IVariant`2.Value2">
+            <summary>
+            The <typeparamref name="T2"/> component of this <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/>.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.IVariant`3">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/>, a(n) <typeparamref name="T2"/>, or a(n) <typeparamref name="T3"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <typeparam name="T3"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.IVariant`3.Value3">
+            <summary>
+            The <typeparamref name="T3"/> component of this <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/>.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.IVariant`4">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/>, a(n) <typeparamref name="T2"/>, a(n) <typeparamref name="T3"/>, or a(n) <typeparamref name="T4"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <typeparam name="T3"></typeparam>
+            <typeparam name="T4"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.IVariant`4.Value4">
+            <summary>
+            The <typeparamref name="T4"/> component of this <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/>.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.IVariant`5">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/>, a(n) <typeparamref name="T2"/>, a(n) <typeparamref name="T3"/>, a(n) <typeparamref name="T4"/>, or a(n) <typeparamref name="T5"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <typeparam name="T3"></typeparam>
+            <typeparam name="T4"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.IVariant`5.Value5">
+            <summary>
+            The <typeparamref name="T5"/> component of this <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/>.
+            </summary>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.Variant`2">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/> or a(n) <typeparamref name="T2"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.Variant`2.ArgIndex">
+            <inheritdoc/>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.Variant`2.Value1">
+            <inheritdoc/>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.Variant`2.Value2">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`2.#ctor(System.Int32)">
+            <summary>
+            Intended for superclases.
+            </summary>
+            <param name="argIdx"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`2.#ctor(`0)">
+            <summary>
+            Create a new <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/> containing a(n) <typeparamref name="T1"/> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`2.#ctor(`1)">
+            <summary>
+            Create a new <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/> containing a(n) <typeparamref name="T2"/> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`2.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1})~`0">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`2.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1})~`1">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`2.op_Implicit(`0)~OOOReader.Utility.Data.Variant.Variant{`0,`1}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`2.op_Implicit(`1)~OOOReader.Utility.Data.Variant.Variant{`0,`1}">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.Variant`3">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/>, a(n) <typeparamref name="T2"/>, or a(n) <typeparamref name="T3"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <typeparam name="T3"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.Variant`3.Value3">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.#ctor(System.Int32)">
+            <summary>
+            Intended for superclases.
+            </summary>
+            <param name="argIdx"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.#ctor(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.#ctor(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.#ctor(`2)">
+            <summary>
+            Create a new <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/> containing a(n) <typeparamref name="T3"/> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2})~`0">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2})~`1">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2})~`2">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.op_Implicit(`0)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.op_Implicit(`1)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`3.op_Implicit(`2)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2}">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.Variant`4">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/>, a(n) <typeparamref name="T2"/>, a(n) <typeparamref name="T3"/>, or a(n) <typeparamref name="T4"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <typeparam name="T3"></typeparam>
+            <typeparam name="T4"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.Variant`4.Value4">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.#ctor(System.Int32)">
+            <summary>
+            Intended for superclases.
+            </summary>
+            <param name="argIdx"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.#ctor(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.#ctor(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.#ctor(`2)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.#ctor(`3)">
+            <summary>
+            Create a new <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/> containing a(n) <typeparamref name="T4"/> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3})~`0">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3})~`1">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3})~`2">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3})~`3">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(`0)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(`1)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(`2)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`4.op_Implicit(`3)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3}">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.Utility.Data.Variant.Variant`5">
+            <summary>
+            A value that could be either a(n) <typeparamref name="T1"/>, a(n) <typeparamref name="T2"/>, a(n) <typeparamref name="T3"/>, a(n) <typeparamref name="T4"/>, or a(n) <typeparamref name="T5"/>.<para/>
+            </summary>
+            <typeparam name="T1"></typeparam>
+            <typeparam name="T2"></typeparam>
+            <typeparam name="T3"></typeparam>
+            <typeparam name="T4"></typeparam>
+        </member>
+        <member name="P:OOOReader.Utility.Data.Variant.Variant`5.Value5">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.#ctor(System.Int32)">
+            <summary>
+            Intended for superclases.
+            </summary>
+            <param name="argIdx"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.#ctor(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.#ctor(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.#ctor(`2)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.#ctor(`3)">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.#ctor(`4)">
+            <summary>
+            Create a new <see cref="T:OOOReader.Utility.Data.Variant.IVariant"/> containing a(n) <typeparamref name="T5"/> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4})~`0">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4})~`1">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4})~`2">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4})~`3">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4})~`4">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(`0)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(`1)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(`2)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(`3)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4}">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.Variant.Variant`5.op_Implicit(`4)~OOOReader.Utility.Data.Variant.Variant{`0,`1,`2,`3,`4}">
+            <inheritdoc/>
+        </member>
+        <member name="T:OOOReader.Utility.Data.VarInt">
+            <summary>
+            Represents a number with a variable number of bytes depending on its needs.
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Data.VarInt.MaxValue">
+            <summary>
+            The highest possible value and size stored in a <see cref="T:OOOReader.Utility.Data.VarInt"/>
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Data.VarInt.MinValue">
+            <summary>
+            The lowest possible value and size stored in a <see cref="T:OOOReader.Utility.Data.VarInt"/>
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Data.VarInt.Invalid">
+            <summary>
+            An invalid <see cref="T:OOOReader.Utility.Data.VarInt"/> with a zero byte size. Identical to <see langword="default"/>.
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Data.VarInt.Value">
+            <summary>
+            The value stored within this <see cref="T:OOOReader.Utility.Data.VarInt"/>.
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Data.VarInt.Size">
+            <summary>
+            The number of bytes this <see cref="T:OOOReader.Utility.Data.VarInt"/> uses.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.VarInt.#ctor(System.UInt64,System.Int32)">
+            <summary>
+            Constructs a new <see cref="T:OOOReader.Utility.Data.VarInt"/> from the given value.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Data.VarInt.Equals(System.Object)">
+            <summary>
+            Returns whether or not this <see cref="T:OOOReader.Utility.Data.VarInt"/> and the given <paramref name="obj"/> have the same value and size, granted it's a <see cref="T:OOOReader.Utility.Data.VarInt"/>.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.VarInt.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Data.VarInt.ToString">
+            <summary>
+            Returns a string describing the value stored inside and the amount of bytes this takes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.VarInt.Equals(OOOReader.Utility.Data.VarInt)">
+            <summary>
+            Returns whether or not this <see cref="T:OOOReader.Utility.Data.VarInt"/> and the given <paramref name="other"/> <see cref="T:OOOReader.Utility.Data.VarInt"/> have the same value and size.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Data.VarInt.CompareTo(OOOReader.Utility.Data.VarInt)">
+            <summary>
+            Sorts this <see cref="T:OOOReader.Utility.Data.VarInt"/> by its stored <see cref="F:OOOReader.Utility.Data.VarInt.Value"/>. <see cref="F:OOOReader.Utility.Data.VarInt.Size"/> has no bearing on the sort order.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Extension.ArrayExtensions">
+            <summary>
+            Array utilities.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.ArrayExtensions.Wrap``1(``0[])">
+            <summary>
+            Wraps multiple parameters into an array.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="ts"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Extension.BinaryReaderExtensions">
+            <summary>
+            Extensions to <see cref="T:System.IO.BinaryReader"/> that permit reading big endian values and returning them in the native format.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.FlipIfNeeded(System.Byte[])">
+            <summary>
+            Flips the bytes of a big endian byte array if the system is little endian.
+            </summary>
+            <param name="incoming"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadInt16BE(System.IO.BinaryReader)">
+            <summary>
+            Reads a signed 16 bit integer that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadUInt16BE(System.IO.BinaryReader)">
+            <summary>
+            Reads an unsigned 16 bit integer that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadInt32BE(System.IO.BinaryReader)">
+            <summary>
+            Reads a signed 32 bit integer that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadUInt32BE(System.IO.BinaryReader)">
+            <summary>
+            Reads an unsigned 32 bit integer that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadInt64BE(System.IO.BinaryReader)">
+            <summary>
+            Reads a signed 64 bit integer that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadUInt64BE(System.IO.BinaryReader)">
+            <summary>
+            Reads an unsigned 64 bit integer that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadSingleBE(System.IO.BinaryReader)">
+            <summary>
+            Reads a single-precision floating point value that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadDoubleBE(System.IO.BinaryReader)">
+            <summary>
+            Reads a double-precision floating point value that is in big-endian format, and returns it in the proper endianness for this system.
+            </summary>
+            <remarks>
+            If a field you are comparing it to has the BigEndian attribute, you do not need to flip the result of this method as it is done for you.
+            </remarks>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadVarInt(System.IO.BinaryReader)">
+            <summary>
+            Reads a variable-length integer value from the stream.
+            </summary>
+            <param name="reader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.BinaryReaderExtensions.ReadUTF(System.IO.BinaryReader)">
+            <summary>
+            Implements <c>DataInputStream.readUtf()</c>. See the <a href="https://docs.oracle.com/javase/7/docs/api/java/io/DataInput.html">Java documentation</a> for more information.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Extension.EnumerableExtensions">
+            <summary>
+            Adds more methods to enumerables and dictionaries.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.EnumerableExtensions.Copy``2(System.Collections.Generic.Dictionary{``0,``1})">
+            <summary>
+            Copies the contents from this dictionary into a new instance.
+            </summary>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
+            <param name="dict"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Extension.TypeExtensions">
+            <summary>
+            Provides extensions to <see cref="T:System.Type"/>
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.TypeExtensions.NewInstance(System.Type)">
+            <summary>
+            Creates a new instance of the given type through a parameterless constructor. Suitable for cases where constraints such as <c>where T : new()</c> are not possible.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+            <inheritdoc cref="M:System.Type.GetConstructor(System.Type[])"/>
+            <inheritdoc cref="M:System.Reflection.ConstructorInfo.Invoke(System.Object[])"/>
+            <exception cref="T:System.NullReferenceException">If <paramref name="type"/> is null or if a parameterless constructor is null.</exception>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.TypeExtensions.NewShadowInstance(System.Type,OOOReader.Utility.Shadows.ClassWrapper)">
+            <summary>
+            Creates a new instance of the given type through a parameterless constructor. Suitable for cases where constraints such as <c>where T : new()</c> are not possible.
+            </summary>
+            <param name="wrapper"></param>
+            <param name="type"></param>
+            <returns></returns>
+            <inheritdoc cref="M:System.Type.GetConstructor(System.Type[])"/>
+            <inheritdoc cref="M:System.Reflection.ConstructorInfo.Invoke(System.Object[])"/>
+            <exception cref="T:System.NullReferenceException">If <paramref name="type"/> is null or if a parameterless constructor is null.</exception>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.TypeExtensions.GetNonSyntheticFields(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Returns all non-synthetic (compiler generated) fields.
+            </summary>
+            <param name="type"></param>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.TypeExtensions.GetFieldValue(System.Object,System.Reflection.FieldInfo)">
+            <summary>
+            A special extension to object to get the value of the given field. This is unique in that it handles <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/> instances appropriately.
+            </summary>
+            <param name="obj"></param>
+            <param name="field"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Extension.TypeExtensions.HasMethodNamed(System.Type,System.String)">
+            <summary>
+            Returns true if ANY method exists on this type with the given name, no matter what its signature is.
+            </summary>
+            <param name="type"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassData.Source">
+            <summary>
+            The origin <see cref="T:OOOReader.ThreeRings.ClydeFile"/> that created this <see cref="T:OOOReader.Utility.Shadows.ClassData"/>.
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Shadows.ClassData.Fields">
+            <summary>
+            Known fields by their IDs. For classes that were converted to a <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/>, this will be empty.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassData.ReadFields">
+            <summary>
+            Returns all fields.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassData.#ctor(OOOReader.ThreeRings.ClydeFile)">
+            <summary>
+            Construct a new <see cref="T:OOOReader.Utility.Shadows.ClassData"/> using the given <see cref="T:OOOReader.ThreeRings.ClydeFile"/> as its source.
+            </summary>
+            <param name="source">The source <see cref="T:OOOReader.ThreeRings.ClydeFile"/> this will be used in, which provides the <see cref="T:OOOReader.Utility.Data.IDReader"/>.</param>
+        </member>
+        <member name="T:OOOReader.Utility.Shadows.ClassResolver">
+            <summary>
+            Provides a means of resolving classes acquired via a <em>Clyde</em> file. Parses Java signatures. Optionally, this can provide overrides when attempting to resolve certain classes. For instance, when it receives <c>com.threerings.opengl.model.config.ModelConfig</c>, it can be redirected to resolve an instance of my own class.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassResolver.GetType(System.String)">
+            <summary>
+            Identical to <see cref="M:System.Type.GetType(System.String)"/>, but this will pass the name through <see cref="M:OOOReader.Utility.Shadows.ClassResolver.GetSubstitute(System.String)"/>.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassResolver.GetArrayType(System.String)">
+            <summary>
+            Identical to <see cref="M:OOOReader.Utility.Shadows.ClassResolver.GetType(System.String)"/>, but returns this type as an array type.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassResolver.GetSubstitute(System.String)">
+            <summary>
+            Returns a substitute name for the given class name. Often helpful for translating Java classes to C# class-equivalents.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Shadows.ClassWrapper">
+            <summary>
+            Receives data from <em>Clyde</em> and figures out what class should be referenced as well as what its flags are.<para/>
+            As described by the Clyde library, <em>Contains information on a class in the stream, which may or may not be resolvable.</em>
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.Name">
+            <summary>
+            The name of this class, which is its fully-qualified type name (for Java, not C#).
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.Signature">
+            <summary>
+            The full Java signature of this class, for instance, [Lsome.package.SomeClass
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsSealed">
+            <summary>
+            Whether or not this class is sealed, or <strong>final</strong> in Java.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsInner">
+            <summary>
+            Whether or not this class is an inner class.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsCollection">
+            <summary>
+            Whether or not this class is some type of collection. Check 
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsMap">
+            <summary>
+            Whether or not this class is some kind of map.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsMulti">
+            <summary>
+            Whether or not this class is a multi- instance of a collection or map.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsMultiset">
+            <summary>
+            Whether or not this is a multi-collection.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsMultimap">
+            <summary>
+            Whether or not this is a multi-map.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsArray">
+            <summary>
+            Whether or not this is an array type
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.IsPrimitive">
+            <summary>
+            Returns true if this is a boxed primitive type.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.WrappedClass">
+            <summary>
+            Returns the type that this points to, or <see langword="null"/> if it could not be resolved, from which <see cref="P:OOOReader.Utility.Shadows.ClassWrapper.WrappedAsShadow"/> may be defined.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.WrappedAsShadow">
+            <summary>
+            If <see cref="P:OOOReader.Utility.Shadows.ClassWrapper.WrappedClass"/> is <see langword="null"/>, this may not be <see langword="null"/>, from which it may be the <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/> representation of the wrapped type. If this is <see langword="null"/>, then the fields for this type could not be found and therefore it is a truly unknown type.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ClassWrapper.ComponentType">
+            <summary>
+            Only present if <see cref="P:OOOReader.Utility.Shadows.ClassWrapper.IsArray"/> is <see langword="true"/>. This represents the component type of the array.
+            </summary>
+        </member>
+        <member name="F:OOOReader.Utility.Shadows.ClassWrapper.Flags">
+            <summary>
+            The flags of this class, as outlined in <see cref="T:OOOReader.ThreeRings.Clyde.ClassFlags"/>.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.#ctor(OOOReader.ThreeRings.ClydeFile,System.String,System.Byte)">
+            <summary>
+            Constructs a new <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/> from the given fully-qualified name and flags.
+            </summary>
+            <param name="source"></param>
+            <param name="name"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.#ctor(OOOReader.ThreeRings.ClydeFile,System.Type)">
+            <summary>
+            Constructs a new <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/> from the given <see cref="T:System.Type"/>
+            </summary>
+            <param name="source"></param>
+            <param name="type"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.IsJavaPrimitive(System.Type)">
+            <summary>
+            Returns whether or not the given type's Java equivalent (if one exists) is primitive in the JVM.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.Equals(System.Object)">
+            <summary>
+            Compares the fully-qualified <see cref="P:OOOReader.Utility.Shadows.ClassWrapper.Name"/>s of the two <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>s.
+            </summary>
+            <param name="obj">The object to compare to.</param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.Equals(OOOReader.Utility.Shadows.ClassWrapper)">
+            <inheritdoc cref="M:OOOReader.Utility.Shadows.ClassWrapper.Equals(System.Object)"/>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.op_Equality(OOOReader.Utility.Shadows.ClassWrapper,OOOReader.Utility.Shadows.ClassWrapper)">
+            <summary>
+            Compares the fully-qualified <see cref="P:OOOReader.Utility.Shadows.ClassWrapper.Name"/>s of the two <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>s.
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.op_Inequality(OOOReader.Utility.Shadows.ClassWrapper,OOOReader.Utility.Shadows.ClassWrapper)">
+            <inheritdoc cref="M:OOOReader.Utility.Shadows.ClassWrapper.op_Equality(OOOReader.Utility.Shadows.ClassWrapper,OOOReader.Utility.Shadows.ClassWrapper)"/>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ClassWrapper.ToString">
+            <summary>
+            Dumps a string describing what class this wraps.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Shadows.FieldData">
+            <summary>
+            A simple representation of a field by its name and type.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.FieldData.Name">
+            <summary>
+            The name of this field.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.FieldData.Class">
+            <summary>
+            The <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/> surrounding the type of this field.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.FieldData.#ctor(System.String,OOOReader.Utility.Shadows.ClassWrapper)">
+            <summary>
+            Construct a new <see cref="T:OOOReader.Utility.Shadows.FieldData"/> for the given field name and wrapper.
+            </summary>
+            <param name="name"></param>
+            <param name="class"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.FieldData.ToString">
+            <summary>
+            Dumps the class this field is a member of as well as the field's name.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:OOOReader.Utility.Shadows.ShadowClass">
+            <summary>
+            Represents a loose container for a class that doesn't exist. <em>Clyde</em> references a lot of different classes which may not be ported 1:1 for any number of reasons.<para/>
+            This is effectively a "beefed up" anonymous type. It is a very close cousin to <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>. Its caveat is that it is not possible to invoke methods of any hypothetical classes, and any undefined values that are set to their defaults will not exist. Additionally, and unlike <see cref="T:OOOReader.Utility.Shadows.ClassWrapper"/>, this represents an <em>instance</em> of the given class.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ShadowClass.Info">
+            <summary>
+            Information on what this class actually <em>is</em>.
+            </summary>
+        </member>
+        <member name="P:OOOReader.Utility.Shadows.ShadowClass.FieldNames">
+            <summary>
+            Returns all field names.
+            </summary>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ShadowClass.#ctor(OOOReader.Utility.Shadows.ClassWrapper,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Construct a new <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/> from the given field array.
+            </summary>
+            <param name="cls"></param>
+            <param name="fields"></param>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ShadowClass.Get``1(System.String,``0)">
+            <summary>
+            Attempts to index the given <paramref name="fieldName"/> and returns its value. If it is a reference, it may be another instance of <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/> depending on whether or not that class exists.
+            </summary>
+            <param name="fieldName"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ShadowClass.Set``1(System.String,``0,System.Boolean)">
+            <summary>
+            Sets the value associated with the given field name to <paramref name="newValue"/>. Throws <see cref="T:System.InvalidCastException"/> if the type of <typeparamref name="T"/> is not assignable to the currently stored type, if present. If a field with the given name is not present, it will add it as a new field.
+            </summary>
+            <param name="fieldName"></param>
+            <param name="newValue"></param>
+            <param name="strictImmutableFields">If true, rather than registering a new field if a field name is added without previously existing, it will throw <see cref="T:System.InvalidOperationException"/></param>
+            <returns></returns>
+        </member>
+        <member name="M:OOOReader.Utility.Shadows.ShadowClass.DumpToFile(System.IO.FileInfo)">
+            <summary>
+            Dumps the contents of this <see cref="T:OOOReader.Utility.Shadows.ShadowClass"/> to the given file. It is a neatly formatted text block.
+            </summary>
+            <param name="target"></param>
+        </member>
+    </members>
+</doc>
