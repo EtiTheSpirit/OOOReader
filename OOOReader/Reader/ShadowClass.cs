@@ -14,14 +14,28 @@ namespace OOOReader.Reader {
 	/// A "shadow class" which is a generic container of arbitrary data that represents a Java class in the Clyde library. It cannot be extended.
 	/// It can represent all four major formfactors of java types: <see langword="class"/>, <see langword="interface"/>, <see langword="enum"/>, and <see langword="@interface"/> (annotations).
 	/// </summary>
-	public sealed class ShadowClass {
+	public sealed class ShadowClass : AbstractShadowClassBase {
 
 		private static readonly Dictionary<string, ShadowClass> TEMPLATES = new Dictionary<string, ShadowClass>();
 
 		/// <summary>
 		/// The name of this class (fully-qualified, Java signature style not including the L and ; (so java/lang/Object not Ljava/lang/Object;).
 		/// </summary>
-		public string Name { get; }
+		/// <remarks>
+		/// This is identical to <see cref="AbstractShadowClassBase.Signature"/>
+		/// </remarks>
+		public string Name {
+			get => Signature;
+			set => Signature = value;
+		}
+
+		/// <summary>
+		/// Not applicable for <see cref="ShadowClass"/>; always raises <see cref="InvalidOperationException"/>.
+		///	</summary>
+		public override ShadowClass? ElementType {
+			get => throw new InvalidOperationException("A ShadowClass instance does not have an element type.");
+			protected set => throw new InvalidOperationException("A ShadowClass instance does not have an element type.");
+		}
 
 		/// <summary>
 		/// The template type of this <see cref="ShadowClass"/>, or <see langword="null"/> if <see cref="IsTemplate"/> is <see langword="true"/>.
@@ -82,21 +96,73 @@ namespace OOOReader.Reader {
 		private readonly Dictionary<string, string> FieldOrFieldElementTypes = new Dictionary<string, string>();
 
 		/// <summary>
-		/// Returns a new instance of a known class (from OOOClassDump.txt) as a ShadowClass. Raises <see cref="ArgumentException"/> if the class name is not known.
+		/// Returns a new instance of a class (from OOOClassDump.txt) as a ShadowClass. If the class name is not recognized, this raises
+		/// of <see cref="ShadowClass"/> with no predefined fields or field types and no base type.
 		/// </summary>
 		/// <remarks>
 		/// A java fully qualified name looks like this: <c>java/lang/Object$SomeInnerClass</c> - If it starts with L and ends with ;, those chars will be stripped.
 		/// </remarks>
 		/// <param name="javaFullyQualifiedName"></param>
+		/// <param name="baseTypeName">Only used if the <see cref="ShadowClass"/> does not already have a template. This is the base class that this shadow will use.</param>
 		/// <returns></returns>
-		public static ShadowClass FromNamedType(string javaFullyQualifiedName) {
+		public static ShadowClass GetOrCreate(string javaFullyQualifiedName, string? baseTypeName = null) {
 			if (javaFullyQualifiedName.StartsWith('L') && javaFullyQualifiedName.EndsWith(';')) {
 				javaFullyQualifiedName = javaFullyQualifiedName[1..^1];
 			}
 			if (TEMPLATES.TryGetValue(javaFullyQualifiedName, out ShadowClass? shadow)) {
 				return shadow!.Clone();
 			}
-			throw new ArgumentException("Unknown class.");
+			return GetOrCreateTemplate(javaFullyQualifiedName, baseTypeName, new Dictionary<string, object?>(), new Dictionary<string, string>()).Clone();
+		}
+
+		/// <summary>
+		/// Returns the template representation of a class (from OOOClassDump.txt). If the class name is not recognized, this returns a new instance
+		/// of a <see cref="ShadowClass"/> which is a template, hence the requirement of a field and field type dictionary. This will register the
+		/// template as well.
+		/// </summary>
+		/// <remarks>
+		/// <strong>This always returns the template object. Use <see cref="Clone"/> to get a workable instance.</strong><para/>
+		/// A java fully qualified name looks like this: <c>java/lang/Object$SomeInnerClass</c> - If it starts with L and ends with ;, those chars will be stripped.
+		/// </remarks>
+		/// <param name="javaFullyQualifiedName"></param>
+		/// <param name="fieldValues">The default values for fields. If the values are objects, consider defining their value type in <paramref name="shadowedFieldTypeValues"/>.</param>
+		/// <param name="shadowedFieldTypeValues">For fields whose values are <see cref="ShadowClass"/> instances (or <see cref="ShadowClassArray"/> instances), this is the fully-qualified type name that can be used in <see cref="GetOrCreate(string)"/>.</param>
+		/// <returns></returns>
+		public static ShadowClass GetOrCreateTemplate(string javaFullyQualifiedName, string? baseClassName, Dictionary<string, object?> fieldValues, Dictionary<string, string> shadowedFieldTypeValues) {
+			if (javaFullyQualifiedName.StartsWith('L') && javaFullyQualifiedName.EndsWith(';')) {
+				javaFullyQualifiedName = javaFullyQualifiedName[1..^1];
+			}
+			if (TEMPLATES.TryGetValue(javaFullyQualifiedName, out ShadowClass? shadow)) {
+				return shadow;
+			}
+			ShadowClass ret = new ShadowClass(javaFullyQualifiedName, baseClassName, ShadowType.Class);
+			fieldValues.CopyTo(ret.Fields);
+			shadowedFieldTypeValues.CopyTo(ret.FieldOrFieldElementTypes);
+			TEMPLATES[javaFullyQualifiedName] = ret;
+			return ret;
+		}
+
+		/// <summary>
+		/// Using OOO's default format of a fully-qualified class signature and a set of flags, this will return a new <strong>Template</strong> <see cref="ShadowClass"/>,
+		/// or a <see cref="ShadowClassArray"/>.
+		/// </summary>
+		/// <param name="className"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static AbstractShadowClassBase CreateFromOOOFormat(string className, byte flags) {
+			(object? def, string sanitizedClassName) = GetDefaultValueFromSignature(className);
+			if (def is null) {
+				return GetOrCreateTemplate(sanitizedClassName, null, new Dictionary<string, object?>(), new Dictionary<string, string>());
+			}
+			if (def is PendingShadowClassArray pending) {
+				GetOrCreateTemplate(sanitizedClassName, null, new Dictionary<string, object?>(), new Dictionary<string, string>());
+				def = pending.Create(); // And since ^ will have made the template, this method works now.
+			}
+			if (def.GetType() != typeof(ShadowClassArray)) {
+				// Now at THIS point if it's not an array, it's wrong.
+				throw new ArgumentException("The input class name caused an unexpected class type of " + def.GetType() + " to be created.");
+			}
+			return (def as AbstractShadowClassBase)!;
 		}
 
 		private static (object?, string) GetDefaultValueFromSignature(string signature) {
@@ -174,12 +240,10 @@ namespace OOOReader.Reader {
 						(object? value, string cleanSignature) = GetDefaultValueFromSignature(signature);
 						shadow.Fields[name] = value;
 						Type? shadowType = shadow.Fields[name]?.GetType();
-						if (shadow.Fields[name] is ShadowClassArray array) {
-							shadow.FieldOrFieldElementTypes[name] = array.ElementType.Name;
-						} else if (shadow.Fields[name] is PendingShadowClassArray pendingArray) {
-							shadow.FieldOrFieldElementTypes[name] = pendingArray.Signature;
+						if (shadow.Fields[name] is AbstractShadowClassBase absBase) {
+							shadow.FieldOrFieldElementTypes[name] = absBase.Signature;
 						} else if (shadow.Fields[name] is null) {
-							shadow.FieldOrFieldElementTypes[name] = cleanSignature;
+							shadow.FieldOrFieldElementTypes[name] = cleanSignature; // Important to NOT create here.
 						}
 					}
 					continue;
@@ -321,9 +385,18 @@ namespace OOOReader.Reader {
 
 		/// <summary>
 		/// A pending shadow class array instance. Used for populating fields early.
+		/// When this is used, it is used in place of a <see cref="ShadowClassArray"/> because the element type of the array does not (yet) exist.
+		/// Calling <see cref="Create"/> will return a new <see cref="ShadowClassArray"/> with the proper element type, assuming it has been created prior to its calling.
 		/// </summary>
-		private class PendingShadowClassArray {
-			public readonly string Signature;
+		private class PendingShadowClassArray : AbstractShadowClassBase {
+
+			/// <summary>
+			/// Not applicable for <see cref="PendingShadowClassArray"/>; always raises <see cref="InvalidOperationException"/>.
+			///	</summary>
+			public override ShadowClass? ElementType {
+				get => throw new InvalidOperationException("A PendingShadowClassArray instance does not have an element type, only an actual ShadowClassArray does.");
+				protected set => throw new InvalidOperationException("A PendingShadowClassArray instance does not have an element type, only an actual ShadowClassArray does.");
+			}
 
 			public PendingShadowClassArray(string signature) {
 				Signature = signature;
@@ -338,12 +411,12 @@ namespace OOOReader.Reader {
 		/// <summary>
 		/// A shadow class array. It enforces that its elements share the same template type.
 		/// </summary>
-		public class ShadowClassArray {
+		public class ShadowClassArray : AbstractShadowClassBase {
 
-			/// <summary>
-			/// The template <see cref="ShadowClass"/> used as this array's element type.
-			/// </summary>
-			public ShadowClass ElementType { get; }
+			public override string Signature { 
+				get => ElementType!.Name;
+				protected set => throw new InvalidOperationException();
+			}
 
 			/// <summary>
 			/// A reference to the array.

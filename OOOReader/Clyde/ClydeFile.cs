@@ -1,10 +1,12 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using OOOReader.Reader;
 using OOOReader.Utility.Attributes;
 using OOOReader.Utility.Data;
 using OOOReader.Utility.Extension;
@@ -87,20 +89,27 @@ namespace OOOReader.Clyde {
 			return null;
 		}
 
-		private object ReadNext() {
-			int id = IDReader.ReadID();
-			if (CachedValues.TryGetValue(id, out object cached)) {
-				return cached;
-			}
-			return ReadValue(id);
-		}
-
-		private object ReadValue(int id) {
-			int classId = IDReader.ReadID();
-			string className = Reader.ReadUTF();
-			byte flags = Reader.ReadByte();
+		private object ReadValue(ShadowClass shadow, int id) {
+			
 
 			return null;
+		}
+
+		/// <summary>
+		/// Reads a class from the stream. Never a primitive value.
+		/// </summary>
+		/// <returns></returns>
+		private AbstractShadowClassBase ReadClass() {
+			int classId = IDReader.ReadID();
+			if (CachedValues.TryGetValue(classId, out object? thing)) {
+				if (thing is AbstractShadowClassBase shadow) {
+					return shadow;
+				}
+			}
+			string className = Reader.ReadUTF();
+			byte flags = Reader.ReadByte();
+			CachedValues[classId] = ShadowClass.CreateFromOOOFormat(className, flags);
+			return (AbstractShadowClassBase)CachedValues[classId];
 		}
 
 		/// <summary>
