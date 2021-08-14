@@ -70,8 +70,19 @@ namespace OOOReader.Reader {
 		private ShadowClass? _BaseClass = null;
 		private readonly string? BaseClassName = null;
 
+
 		/// <summary>
-		/// Returns a new instance of a known class (from OOOClassDump.txt). Raises <see cref="ArgumentException"/> if the class name is not known.
+		/// The fields in this ShadowClass.
+		/// </summary>
+		private readonly Dictionary<string, object?> Fields = new Dictionary<string, object?>();
+
+		/// <summary>
+		/// The types of values in the fields of this ShadowClass. The type values will be usable to look up something in <see cref="TEMPLATES"/>.
+		/// </summary>
+		private readonly Dictionary<string, string> FieldOrFieldElementTypes = new Dictionary<string, string>();
+
+		/// <summary>
+		/// Returns a new instance of a known class (from OOOClassDump.txt) as a ShadowClass. Raises <see cref="ArgumentException"/> if the class name is not known.
 		/// </summary>
 		/// <remarks>
 		/// A java fully qualified name looks like this: <c>java/lang/Object$SomeInnerClass</c> - If it starts with L and ends with ;, those chars will be stripped.
@@ -88,7 +99,7 @@ namespace OOOReader.Reader {
 			throw new ArgumentException("Unknown class.");
 		}
 
-		private static object? GetDefaultValueFromSignature(string signature) {
+		private static (object?, string) GetDefaultValueFromSignature(string signature) {
 			object? value = default;
 			int arrayDepth = 0;
 			while (signature.StartsWith('[')) {
@@ -126,8 +137,10 @@ namespace OOOReader.Reader {
 					value = Array.CreateInstance(value.GetType(), 0);
 				}
 			}
-
-			return value;
+			if (signature.StartsWith('L') && signature.EndsWith(';')) {
+				signature = signature[1..^1];
+			}
+			return (value, signature);
 		}
 
 		static ShadowClass() {
@@ -158,7 +171,16 @@ namespace OOOReader.Reader {
 						string[] fInfo = info[1..].Split(' ');
 						string name = fInfo[0];
 						string signature = fInfo[1];
-						shadow.Fields[name] = GetDefaultValueFromSignature(signature);
+						(object? value, string cleanSignature) = GetDefaultValueFromSignature(signature);
+						shadow.Fields[name] = value;
+						Type? shadowType = shadow.Fields[name]?.GetType();
+						if (shadow.Fields[name] is ShadowClassArray array) {
+							shadow.FieldOrFieldElementTypes[name] = array.ElementType.Name;
+						} else if (shadow.Fields[name] is PendingShadowClassArray pendingArray) {
+							shadow.FieldOrFieldElementTypes[name] = pendingArray.Signature;
+						} else if (shadow.Fields[name] is null) {
+							shadow.FieldOrFieldElementTypes[name] = cleanSignature;
+						}
 					}
 					continue;
 				}
@@ -190,7 +212,10 @@ namespace OOOReader.Reader {
 		}
 
 		private ShadowClass(ShadowClass other) : this(other.Name, other.BaseClassName, other.Type) {
+			IsTemplate = false;
+
 			other.Fields.CopyTo(Fields);
+			other.FieldOrFieldElementTypes.CopyTo(FieldOrFieldElementTypes);
 
 			_OuterClass = other.OuterClass; // use the actual property so it's evaluated
 			CheckedForOuterClass = other.CheckedForOuterClass;
@@ -204,8 +229,6 @@ namespace OOOReader.Reader {
 				TemplateType = other.TemplateType;
 			}
 		}
-
-		private readonly Dictionary<string, object?> Fields = new Dictionary<string, object?>();
 
 		/// <summary>
 		/// Clones this <see cref="ShadowClass"/> into a new instance. Mostly useful for templates (where <see cref="IsTemplate"/> is <see langword="true"/>).
@@ -271,6 +294,16 @@ namespace OOOReader.Reader {
 			if (IsTemplate) throw new InvalidOperationException("Cannot call SetField on a template object.");
 			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Invalid field name.");
 			if (addToThisObject || BaseClass == null || Fields.ContainsKey(name)) {
+				if (FieldOrFieldElementTypes.TryGetValue(name, out string? fieldSig)) {
+					ShadowClass templateShadow = TEMPLATES[fieldSig];
+					if (value is ShadowClass shadowClass && shadowClass.TemplateType != templateShadow) {
+						throw new ArgumentException("The field '" + name + "' is supposed to be an instance of ShadowClass pointing to " + TEMPLATES[fieldSig].Name);
+					} else if (value is ShadowClassArray shadowClassArray && shadowClassArray.ElementType != templateShadow) {
+						throw new ArgumentException("The field '" + name + "' is supposed to be an instance of ShadowClassArray with an element type of " + TEMPLATES[fieldSig].Name);
+					} else if (value is PendingShadowClassArray) {
+						throw new InvalidOperationException("The type of this value is a PendingShadowClassArray which should not be possible.");
+					}
+				}
 				Fields[name] = value;
 			} else {
 				// Base class exists and said field is not part of this. Set base?
@@ -282,11 +315,15 @@ namespace OOOReader.Reader {
 			}
 		}
 
+		public override string ToString() {
+			return $"ShadowClass[Type={Name}, IsTemplate={IsTemplate}]";
+		}
+
 		/// <summary>
 		/// A pending shadow class array instance. Used for populating fields early.
 		/// </summary>
 		private class PendingShadowClassArray {
-			private readonly string Signature;
+			public readonly string Signature;
 
 			public PendingShadowClassArray(string signature) {
 				Signature = signature;
