@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace OOODumper.LazySRGReimpl {
-	public class SRGStyleWriter : IDisposable {
+	public class ClassDumper : IDisposable {
 
 		private StringWriter Writer { get; }
 
-		public SRGStyleWriter(StringWriter writer) {
+		public ClassDumper(StringWriter writer) {
 			Writer = writer;
 		}
 
@@ -20,17 +20,22 @@ namespace OOODumper.LazySRGReimpl {
 			if (fullName.StartsWith("__") || fullName.Length == 0) return;
 			if (fullName.EndsWith("__<CallerID>")) return;
 			if (type.IsClass) {
-				Writer.Write("CL ");
+				Writer.Write("CL");
 			} else if (type.IsInterface) {
-				Writer.Write("IF ");
+				Writer.Write("IF");
 			} else if (type.IsAssignableTo(typeof(Attribute))) {
-				Writer.Write("AN ");
+				Writer.Write("AN");
 			} else if (type.Name.EndsWith("__Enum")) {
-				Writer.Write("EN ");
+				Writer.Write("EN");
 			} else {
 				Console.WriteLine("Unknown type signature for " + type);
 			}
 			if (fullName == "System/Object") fullName = "java/lang/Object";
+			if (type.IsSealed) {
+				Writer.Write("f");
+			} else {
+				Writer.Write("-");
+			}
 			Writer.Write(fullName);
 
 			if (type.BaseType != null && type.BaseType != typeof(object) && type.BaseType != typeof(java.lang.Object) && type.BaseType != typeof(ikvm.@internal.AnnotationAttributeBase)) {
