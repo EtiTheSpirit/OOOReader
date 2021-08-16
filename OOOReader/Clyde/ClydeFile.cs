@@ -1,17 +1,13 @@
 ﻿#nullable enable
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using OOOReader.Reader;
 using OOOReader.Utility.Attributes;
 using OOOReader.Utility.Data;
 using OOOReader.Utility.Extension;
-using OOOReader.ValueTypes;
 using OOOReader.WithCustomReadFields;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace OOOReader.Clyde {
 	public class ClydeFile : IDisposable {
@@ -94,6 +90,16 @@ namespace OOOReader.Clyde {
 		/// </summary>
 		private Dictionary<string, object?> CurrentReadFields { get; set; } = new Dictionary<string, object?>();
 
+		/// <summary>
+		/// A quick reference to the <see cref="ShadowClass"/> representing <c>java.lang.Object</c>
+		/// </summary>
+		private ShadowClass ObjectClass { get; } = ShadowClass.GetOrCreate("java.lang.Object").TemplateType;
+
+		/// <summary>
+		/// A quick reference to the <see cref="ShadowClass"/> representing <c>java.lang.String</c>
+		/// </summary>
+		private ShadowClass StringClass { get; } = ShadowClass.GetOrCreate("java.lang.String").TemplateType;
+
 		public ClydeFile(Stream input) {
 			BaseStream = input;
 			Reader = new BinaryReader(input);
@@ -133,7 +139,7 @@ namespace OOOReader.Clyde {
 		}
 
 		public object? ReadObject() {
-			return Read(ShadowClass.GetOrCreate("java.lang.Object"));
+			return Read(ObjectClass);
 		}
 
 		public void ReadEntriesInto(ShadowClass template, object[] container) {
@@ -144,7 +150,7 @@ namespace OOOReader.Clyde {
 
 		private object? ReadValue(AbstractShadowClassBase shadow, int id) {
 			if (shadow is ShadowClass shadowInstance && !shadowInstance.IsTemplate) {
-				shadow = shadowInstance.TemplateType!;
+				shadow = shadowInstance.TemplateType;
 			}
 			AbstractShadowClassBase workingClass = shadow;
 			if (!shadow.IsSealed) {
@@ -183,11 +189,24 @@ namespace OOOReader.Clyde {
 			if (workingClass is ShadowClassArray array2) {
 				ReadEntriesInto(array2.ElementType!, value != null ? (object[])value : new object[length]);
 			} else {
-				// Collection, Map (not impl)
-				// Read fields time!
-				// In this case, we can completely skip the object marshaller.
+				object? rep = ShadowClass.TryGetReplacementForSig(((AbstractShadowClassBase)value).Signature);
+				if (rep != null) {
+					if (rep is List<object?> collection) {
+						value = ReadEntries((value as List<object?>) ?? collection);
+					} else if (rep.GetType() == typeof(Dictionary<,>)) {
+						if (rep is Dictionary<object, int> multiset) {
+							value = ReadEntries((value as Dictionary<object, int>) ?? multiset);
+						} else if (rep is Dictionary<object, object?> map) {
+							value = ReadEntries((value as Dictionary<object, object?>) ?? map);
+						}
+					}
+				} else {
+					// Collection, Map (not impl)
+					// Read fields time!
+					// In this case, we can completely skip the object marshaller.
 
-				ReadFields((ShadowClass)value, IDReader.ReadNextSegmentLength());
+					ReadFields((ShadowClass)value, IDReader.ReadNextSegmentLength());
+				}
 			}
 			return value;
 		}
@@ -200,6 +219,31 @@ namespace OOOReader.Clyde {
 			readMethod?.Invoke(numFields, cls, this);
 
 			CurrentReadFields.Clear();
+		}
+
+		private List<object?> ReadEntries(List<object?> collection) {
+			int amount = IDReader.ReadNextSegmentLength();
+			for (int i = 0; i < amount; i++) {
+				collection.Add(Read(ObjectClass));
+			}
+			return collection;
+		}
+
+		private Dictionary<object, object?> ReadEntries(Dictionary<object, object?> map) {
+			int amount = IDReader.ReadNextSegmentLength();
+			for (int i = 0; i < amount; i++) {
+				//collection.Add(Read(ShadowClass.GetOrCreate("java.lang.Object")));
+				map[Read(ObjectClass)!] = Read(ObjectClass);
+			}
+			return map;
+		}
+
+		private Dictionary<object, int> ReadEntries(Dictionary<object, int> multiset) {
+			int amount = IDReader.ReadNextSegmentLength();
+			for (int i = 0; i < amount; i++) {
+				multiset[Read(ObjectClass)!] = IDReader.ReadNextSegmentLength();
+			}
+			return multiset;
 		}
 
 		internal void ReadFieldsDefault(ShadowClass cls, int numFields) {
@@ -219,7 +263,7 @@ namespace OOOReader.Clyde {
 			FieldData? fieldTemplate;
 			if (!CachedFields.TryGetValue(id, out fieldTemplate)) {
 				// Doesn't exist.
-				fieldTemplate = new FieldData((string)Read(ShadowClass.GetOrCreate("java.lang.String"))!, (ShadowClass)ReadClass());
+				fieldTemplate = new FieldData((string)Read(StringClass)!, (ShadowClass)ReadClass());
 				CachedFields[id] = fieldTemplate;
 			}
 			fields[fieldTemplate.Name] = Read(fieldTemplate.Template);

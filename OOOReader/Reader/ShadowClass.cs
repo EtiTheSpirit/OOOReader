@@ -40,9 +40,9 @@ namespace OOOReader.Reader {
 		}
 
 		/// <summary>
-		/// The template type of this <see cref="ShadowClass"/>, or <see langword="null"/> if <see cref="IsTemplate"/> is <see langword="true"/>.
+		/// The template type of this <see cref="ShadowClass"/>, or <see langword="this"/> if <see cref="IsTemplate"/> is <see langword="true"/>.
 		/// </summary>
-		public ShadowClass? TemplateType { get; }
+		public ShadowClass TemplateType { get; }
 
 		/// <summary>
 		/// The type of Java class that this is.
@@ -181,7 +181,13 @@ namespace OOOReader.Reader {
 
 		#region Static Init
 
-		private static object? TryGetReplacementForSig(string signature) {
+		/// <summary>
+		/// Given a class signature, this attempts to return an object that <em>mostly</em> represents the input class. This is mostly aimed at
+		/// sets/collections/lists.
+		/// </summary>
+		/// <param name="signature"></param>
+		/// <returns></returns>
+		public static object? TryGetReplacementForSig(string signature) {
 			while (signature.StartsWith('[')) {
 				signature = signature[1..];
 			}
@@ -191,8 +197,14 @@ namespace OOOReader.Reader {
 			if (signature == "java.util.Set" || signature == "java.util.List"
 				|| signature == "java.util.ArrayList" || signature == "java.util.HashSet"
 				|| signature == "java.util.Collection") 
+				// Multiset WOULD BE acceptable here because C# lists already support duplicates. 
+				// But the thing is, its not read like that in Clyde, so...
 			{
 				return new List<object>();
+			}
+
+			if (signature == "com.google.common.collect.Multiset") {
+				return new Dictionary<object, int>();
 			}
 
 			if (signature == "java.util.Map" || signature == "java.util.HashMap" || signature == "com.samskivert.util.LRUHashMap") {
@@ -200,12 +212,14 @@ namespace OOOReader.Reader {
 			}
 
 			if (signature == "com.samskivert.util.HashIntMap") {
-				return new Dictionary<int, object?>();
+				//return new Dictionary<int, object?>();
+				return new Dictionary<object, object?>(); // Just use object for key, it's easier
 			}
 
 			if (signature == "com.google.common.collect.Multimap" || signature == "com.google.common.collect.SetMultimap" || signature == "com.google.common.collect.ListMultimap") {
 				return new Dictionary<object, List<object>>();
 			}
+
 
 			return default;
 		}
@@ -344,6 +358,7 @@ namespace OOOReader.Reader {
 			IsTemplate = true;
 			IsSealed = isFinal;
 			IsPrimitive = isPrimitive;
+			TemplateType = this;
 		}
 
 		private ShadowClass(ShadowClass other) : this(other.Name, other.BaseClassName, other.Type) {
