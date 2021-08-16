@@ -11,6 +11,7 @@ using OOOReader.Utility.Attributes;
 using OOOReader.Utility.Data;
 using OOOReader.Utility.Extension;
 using OOOReader.ValueTypes;
+using OOOReader.WithCustomReadFields;
 
 namespace OOOReader.Clyde {
 	public class ClydeFile : IDisposable {
@@ -19,9 +20,30 @@ namespace OOOReader.Clyde {
 
 		private static readonly object NULL = new object();
 
-		private static readonly Type[] BOOTSTRAP_CLASSES = {
+		/// <summary>
+		/// Must be in this exact order. These are the types for the "default" classes of Clyde's Binary Importer
+		/// </summary>
+		[Obsolete("The implementation of ShadowClass makes this useless, use BOOTSTRAP_CLASS_JAVA_NAMES instead.", true)]
+		public static readonly Type[] BOOTSTRAP_CLASSES = {
 			typeof(bool), typeof(byte), typeof(char), typeof(double),
 			typeof(float), typeof(int), typeof(long), typeof(short)
+		};
+
+		/// <summary>
+		/// Identical to <see cref="BOOTSTRAP_CLASSES"/>, but by Java fully-qualified name instead of C# type.
+		/// </summary>
+		public static readonly string[] BOOTSTRAP_CLASS_JAVA_NAMES = {
+			"java.lang.Boolean", "java.lang.Byte", "java.lang.Character", "java.lang.Double",
+			"java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Short"
+		};
+
+		/// <summary>
+		/// The internal JVM Bytecode names in a 1:1 mapping to <see cref="BOOTSTRAP_CLASS_JAVA_NAMES"/>
+		/// </summary>
+		// TODO: Not this? Maybe a dictionary
+		public static readonly string[] BOOTSTRAP_CLASS_JVM_NAMES = {
+			"Z", "B", "C", "D",
+			"F", "I", "J", "S"
 		};
 
 		#endregion
@@ -58,16 +80,26 @@ namespace OOOReader.Clyde {
 		private IDReader IDReader { get; }
 
 		/// <summary>
-		/// Objects bound to IDs.
+		/// Object IDs bound to a template for that type.
 		/// </summary>
 		private Dictionary<int, object> CachedValues { get; } = new Dictionary<int, object>();
+
+		/// <summary>
+		/// Field names bound to a template for their type.
+		/// </summary>
+		private Dictionary<int, FieldData> CachedFields { get; } = new Dictionary<int, FieldData>();
+
+		/// <summary>
+		/// A ephemeral dictionary of the current read fields operation. It is cleared as soon as the main reading cycle has completed for an object.
+		/// </summary>
+		private Dictionary<string, object?> CurrentReadFields { get; set; } = new Dictionary<string, object?>();
 
 		public ClydeFile(Stream input) {
 			BaseStream = input;
 			Reader = new BinaryReader(input);
 
-			uint header = Reader.ReadUInt32BE();
-			if (header != HEADER) throw new IOException($"Invalid header value! Expected 0x{HEADER:X8}, got 0x{header:X8}");
+			uint readHeader = Reader.ReadUInt32BE();
+			if (readHeader != HEADER) throw new IOException($"Invalid header value! Expected 0x{HEADER:X8}, got 0x{readHeader:X8}");
 			
 			ClydeVersion version = (ClydeVersion)Reader.ReadUInt16BE();
 			IDReader = IDReader.For(Reader, version);
@@ -80,36 +112,143 @@ namespace OOOReader.Clyde {
 			CachedValues[0] = NULL;
 		}
 
-		public T Read<T>() where T : struct {
-			return default;
+		/// <summary>
+		/// Reads a field from the current read fields array <see cref="CurrentReadFields"/>.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="name"></param>
+		/// <param name="defValue"></param>
+		/// <returns></returns>
+		public T? Read<T>(string name, T? defValue = default) {
+			if (CurrentReadFields.ContainsKey(name)) {
+				object? value = CurrentReadFields[name];
+				if (value == null) {
+					return default; // Null or 0, whatever is appropriate.
+				} else {
+					// The value is not null.
+					return (T)value;
+				}
+			}
+			return defValue;
 		}
 
-		public object ReadObject() {
-
-			return null;
+		public object? ReadObject() {
+			return Read(ShadowClass.GetOrCreate("java.lang.Object"));
 		}
 
-		private object ReadValue(ShadowClass shadow, int id) {
-			
+		public void ReadEntriesInto(ShadowClass template, object[] container) {
+			for (int idx = 0; idx < container.Length; idx++) {
+				container[idx] = Read(template)!;
+			}
+		}
 
-			return null;
+		private object? ReadValue(AbstractShadowClassBase shadow, int id) {
+			if (shadow is ShadowClass shadowInstance && !shadowInstance.IsTemplate) {
+				shadow = shadowInstance.TemplateType!;
+			}
+			AbstractShadowClassBase workingClass = shadow;
+			if (!shadow.IsSealed) {
+				object read = ReadClass();
+				if (read == NULL) {
+					return null;
+				}
+				workingClass = (AbstractShadowClassBase)read;
+			}
+			// OOO gets the actual class instance here, I can't do that because I don't have their engine classes here on hand.
+			// The solution is to use my dump instead, which has all of the fields and their types (which were prepopulated into ShadowClass)
+			// Their main use case is to see if there is a Streamer instance for the given type. That's easy to implement.
+			IStreamer streamer = IStreamer.GetStreamer(workingClass.Signature);
+			object? value;
+			if (streamer != null) {
+				value = streamer.Read(Reader);
+				if (id != -1 && value != null) {
+					CachedValues[id] = value;
+				}
+				return value;
+			}
+
+			int length = 0;
+			if (workingClass is ShadowClassArray array) {
+				length = IDReader.ReadNextSegmentLength();
+				value = array.NewInstance(length);
+			} else if (workingClass is ShadowClass mainShadow) {
+				// OOO never seemed to use immutable list/set/map/multisets in their format despite supporting it?
+				// TODO: Should I support this?
+				// For now: No
+				value = mainShadow.CloneTemplate();
+			} else {
+				throw new InvalidOperationException("Working class instance was " + workingClass.GetType());
+			}
+			CachedValues[id] = value;
+			if (workingClass is ShadowClassArray array2) {
+				ReadEntriesInto(array2.ElementType!, value != null ? (object[])value : new object[length]);
+			} else {
+				// Collection, Map (not impl)
+				// Read fields time!
+				// In this case, we can completely skip the object marshaller.
+
+				ReadFields((ShadowClass)value, IDReader.ReadNextSegmentLength());
+			}
+			return value;
+		}
+
+		private void ReadFields(ShadowClass cls, int numFields) {
+			ReadFieldsDefault(cls, numFields);
+
+			// If one exists, go there afterwards.
+			var readMethod = ReadFieldsProvider.GetReadFieldsMethod(cls);
+			readMethod?.Invoke(numFields, cls, this);
+
+			CurrentReadFields.Clear();
+		}
+
+		internal void ReadFieldsDefault(ShadowClass cls, int numFields) {
+			Dictionary<string, object?> fields = new Dictionary<string, object?>();
+			for (int idx = 0; idx < numFields; idx++) {
+				ReadNextFieldInto(fields);
+			}
+			cls.SetFields(fields);
+			CurrentReadFields = fields;
 		}
 
 		/// <summary>
-		/// Reads a class from the stream. Never a primitive value.
+		/// Only to be called by a ReadFields method.
+		/// </summary>
+		private void ReadNextFieldInto(Dictionary<string, object?> fields) {
+			int id = IDReader.ReadID();
+			FieldData? fieldTemplate;
+			if (!CachedFields.TryGetValue(id, out fieldTemplate)) {
+				// Doesn't exist.
+				fieldTemplate = new FieldData((string)Read(ShadowClass.GetOrCreate("java.lang.String"))!, (ShadowClass)ReadClass());
+				CachedFields[id] = fieldTemplate;
+			}
+			fields[fieldTemplate.Name] = Read(fieldTemplate.Template);
+		}
+
+		/// <summary>
+		/// Reads a class or value from the stream, which may be an instance of <see cref="AbstractShadowClassBase"/>.
 		/// </summary>
 		/// <returns></returns>
-		private AbstractShadowClassBase ReadClass() {
+		private object ReadClass() {
 			int classId = IDReader.ReadID();
 			if (CachedValues.TryGetValue(classId, out object? thing)) {
-				if (thing is AbstractShadowClassBase shadow) {
-					return shadow;
-				}
+				return thing!;
 			}
 			string className = Reader.ReadUTF();
 			byte flags = Reader.ReadByte();
 			CachedValues[classId] = ShadowClass.CreateFromOOOFormat(className, flags);
-			return (AbstractShadowClassBase)CachedValues[classId];
+			return CachedValues[classId];
+		}
+
+		private object? Read(ShadowClass template) {
+			if (template.IsPrimitive) {
+				return ReadValue(template, -1);
+			}
+			int objId = IDReader.ReadID();
+			if (CachedValues.ContainsKey(objId)) {
+				return CachedValues[objId];
+			}
+			return ReadValue(template, objId);
 		}
 
 		/// <summary>
@@ -118,6 +257,28 @@ namespace OOOReader.Clyde {
 		public void Dispose() {
 			GC.SuppressFinalize(this);
 			BaseStream.Dispose();
+		}
+
+		/// <summary>
+		/// Represents a field read from the stream.
+		/// </summary>
+		private class FieldData {
+
+			/// <summary>
+			/// The name of this field.
+			/// </summary>
+			public string Name { get; }
+
+			/// <summary>
+			/// The type of this field.
+			/// </summary>
+			public ShadowClass Template { get; }
+
+			public FieldData(string name, ShadowClass template) {
+				Name = name;
+				Template = template;
+			}
+
 		}
 	}
 }

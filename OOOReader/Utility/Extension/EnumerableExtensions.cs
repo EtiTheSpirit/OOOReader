@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,17 @@ namespace OOOReader.Utility.Extension {
 			foreach (KeyValuePair<TKey, TValue> data in dict) {
 				destination[data.Key] = data.Value;
 			}
+		}
+
+		/// <summary>
+		/// Returns the index of the given element in the given <see cref="IEnumerable{T}"/>.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="enumerable"></param>
+		/// <param name="element"></param>
+		/// <returns></returns>
+		public static int IndexOf<T>(this IEnumerable<T> enumerable, T element) {
+			return enumerable.ToList().IndexOf(element); // kekw
 		}
 
 	}

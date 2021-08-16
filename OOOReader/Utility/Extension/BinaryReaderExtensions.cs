@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace OOOReader.Utility.Extension {
 	/// <summary>
@@ -147,6 +148,18 @@ namespace OOOReader.Utility.Extension {
 			throw new InvalidDataException();
 		}
 
+		public static string TryReadUTFBoth(this BinaryReader reader) {
+			ushort bytesLeft = reader.ReadUInt16BE();
+			long pos = reader.BaseStream.Position;
+			try {
+				return ReadUTFSkipLength(reader, bytesLeft);
+			} catch {
+				reader.BaseStream.Position = pos;
+				byte[] txt = reader.ReadBytes(bytesLeft);
+				return Encoding.UTF8.GetString(txt);
+			}
+		}
+
 		/// <summary>
 		/// Implements <c>DataInputStream.readUtf()</c>. See the <a href="https://docs.oracle.com/javase/7/docs/api/java/io/DataInput.html">Java documentation</a> for more information.
 		/// </summary>
@@ -154,7 +167,11 @@ namespace OOOReader.Utility.Extension {
 		public static string ReadUTF(this BinaryReader reader) {
 			// Ripped from IKVM's implementation of DataInputStream and cleaned up (from its decompiled form) by me.
 			ushort bytesLeft = reader.ReadUInt16BE();
+			return ReadUTFSkipLength(reader, bytesLeft);
+		}
 
+		private static string ReadUTFSkipLength(this BinaryReader reader, ushort bytesLeft) {
+			// Ripped from IKVM's implementation of DataInputStream and cleaned up (from its decompiled form) by me.
 			char[] result = new char[bytesLeft];
 			long readerAt = reader.BaseStream.Position;
 			byte[] stringBytes = reader.ReadBytes(bytesLeft);

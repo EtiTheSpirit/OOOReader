@@ -10,8 +10,9 @@ namespace OOOReader {
 	public static class Core {
 
 		static void Main(string[] args) {
-			//ClydeFile file = new ClydeFile(File.OpenRead(@"E:\Steam Games\steamapps\common\Spiral Knights\rsrc\character\npc\monster\gremlin\null\model.dat"));
-			ShadowClass articulated = ShadowClass.GetOrCreate("com/threerings/opengl/model/config/ArticulatedConfig");
+			ClydeFile file = new ClydeFile(File.OpenRead(@"E:\Steam Games\steamapps\common\Spiral Knights\rsrc\character\npc\monster\gremlin\null\model-decomp.dat"));
+			file.ReadObject();
+			//ShadowClass articulated = ShadowClass.GetOrCreate("com/threerings/opengl/model/config/ArticulatedConfig");
 
 			
 			Console.ReadKey();

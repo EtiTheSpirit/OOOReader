@@ -16,7 +16,7 @@ namespace OOODumper.LazySRGReimpl {
 		}
 
 		public void WriteTypeAndMembers(Type type) {
-			string fullName = type.FullName.Replace("+", "$").Replace(".", "/"); // For java
+			string fullName = type.FullName.Replace("+", "$"); // Do NOT replace . with /
 			if (fullName.StartsWith("__") || fullName.Length == 0) return;
 			if (fullName.EndsWith("__<CallerID>")) return;
 			if (type.IsClass) {
@@ -30,7 +30,7 @@ namespace OOODumper.LazySRGReimpl {
 			} else {
 				Console.WriteLine("Unknown type signature for " + type);
 			}
-			if (fullName == "System/Object") fullName = "java/lang/Object";
+			if (fullName == "System.Object") fullName = "java.lang.Object";
 			if (type.IsSealed) {
 				Writer.Write("f");
 			} else {
@@ -39,15 +39,15 @@ namespace OOODumper.LazySRGReimpl {
 			Writer.Write(fullName);
 
 			if (type.BaseType != null && type.BaseType != typeof(object) && type.BaseType != typeof(java.lang.Object) && type.BaseType != typeof(ikvm.@internal.AnnotationAttributeBase)) {
-				string otherFullName = type.BaseType.FullName.Replace("+", "$").Replace(".", "/"); // For java
-				if (otherFullName == "System/Object") otherFullName = "java/lang/Object";
+				string otherFullName = type.BaseType.FullName.Replace("+", "$");
+				if (otherFullName == "System.Object") otherFullName = "java.lang.Object";
 				if (otherFullName.StartsWith("__") || otherFullName.Length == 0) return;
 				Writer.WriteLine(":" + otherFullName);
 			} else {
 				Writer.WriteLine();
 			}
 
-			FieldInfo[] fields = type.GetFields();
+			FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 			foreach (FieldInfo field in fields) {
 				if (field.IsStatic) continue;
 				if (field.Name == "value__") continue;
@@ -94,12 +94,12 @@ namespace OOODumper.LazySRGReimpl {
 			} else if (t == typeof(double)) {
 				Writer.Write('D');
 			} else if (t == typeof(string)) {
-				Writer.Write("Ljava/lang/String;");
+				Writer.Write("Ljava.lang.String;");
 			} else {
 				Writer.Write('L');
 				string name = t.FullName;
 				if (name == "System.Object") name = "java.lang.Object";
-				Writer.Write(name.Replace("+", "$").Replace(".", "/"));
+				Writer.Write(name.Replace("+", "$"));
 				Writer.Write(';');
 			}
 			Writer.WriteLine();
