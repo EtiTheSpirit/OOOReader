@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using OOOReader.Clyde;
 using OOOReader.Reader;
+using OOOReader.Utility.ShallowImpl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,49 +43,50 @@ namespace OOOReader.WithCustomReadBehavior {
 			},
 			["com.threerings.math.Transform2D"] = (numFields, cls, clydeFile) => {
 				ShadowClass? translation = clydeFile.Read<ShadowClass?>("translation");
-				cls.SetField("_translation", translation);
+				cls["_translation"] = translation;
 
 				float rotation = clydeFile.Read("rotation", 0f);
-				cls.SetField("_rotation", rotation);
+				cls["_rotation"] = rotation;
 
 				float scale = clydeFile.Read("scale", 1f);
-				cls.SetField("_scale", scale);
+				cls["_scale"] = scale;
 
 				ShadowClass? matrix = clydeFile.Read<ShadowClass?>("matrix");
-				cls.SetField("_matrix", matrix);
+				cls["_matrix"] = matrix;
 
 				if (matrix != null) {
 					bool isAffine = (float)matrix.GetField("m02")! == 0f && (float)matrix.GetField("m12")! == 0f && (float)matrix.GetField("m22")! == 1f;
-					cls.SetField("_type", isAffine ? 3 : 4);
+					cls["_type"] = isAffine ? 3 : 4;
 				} else if (translation == null && rotation == 0 && scale == 1) {
-					cls.SetField("_type", 0);
+					cls["_type"] = 0;
 				} else {
-					cls.SetField("_translation", translation ?? ShadowClass.CreateInstanceOf("com.threerings.math.Vector2f"));
-					cls.SetField("_type", scale == 1 ? 1 : 2);
+					cls["_translation"] = translation ?? ShadowClass.CreateInstanceOf("com.threerings.math.Vector2f");
+					cls["_type"] = scale == 1 ? 1 : 2;
 				}
 			},
 			["com.threerings.math.Transform3D"] = (numFields, cls, clydeFile) => {
 				ShadowClass? translation = clydeFile.Read<ShadowClass?>("translation");
-				cls.SetField("_translation", translation);
+				cls["_translation"] = translation;
 
 				ShadowClass? rotation = clydeFile.Read<ShadowClass?>("rotation");
-				cls.SetField("_rotation", rotation);
+				cls["_rotation"] = rotation;
 
 				float scale = clydeFile.Read("scale", 1f);
-				cls.SetField("_scale", scale);
+				cls["_scale"] = scale;
 
 				ShadowClass? matrix = clydeFile.Read<ShadowClass?>("matrix");
-				cls.SetField("_matrix", matrix);
+				cls["_matrix"] = matrix;
 
 				if (matrix != null) {
 					bool isAffine = (float)matrix.GetField("m03")! == 0f && (float)matrix.GetField("m13")! == 0f && (float)matrix.GetField("m23")! == 0f && (float)matrix.GetField("m33")! == 1f;
-					cls.SetField("_type", isAffine ? 3 : 4);
+					//cls.SetField("_type", isAffine ? 3 : 4);
+					cls["_type"] = isAffine ? 3 : 4;
 				} else if (translation == null && rotation == null && scale == 1) {
-					cls.SetField("_type", 0);
+					cls["_type"] = 0;
 				} else {
-					cls.SetField("_translation", translation ?? ShadowClass.CreateInstanceOf("com.threerings.math.Vector3f"));
-					cls.SetField("_rotation", rotation ?? ShadowClass.CreateInstanceOf("com.threerings.math.Quaternion"));
-					cls.SetField("_type", scale == 1 ? 1 : 2);
+					cls["_translation"] = translation ?? ShadowClass.CreateInstanceOf("com.threerings.math.Vector3f");
+					cls["_rotation"] = rotation ?? ShadowClass.CreateInstanceOf("com.threerings.math.Quaternion");
+					cls["_type"] = scale == 1 ? 1 : 2;
 				}
 			},
 			["com.threerings.opengl.effect.config.BaseParticleSystemConfig$Layer"] = (numFields, cls, clydeFile) => {
@@ -96,17 +98,11 @@ namespace OOOReader.WithCustomReadBehavior {
 				//clydeFile.ReadFieldsDefault(cls);
 
 				// calls "initTransientFields", which calls updateRefTransforms on the root node.
-				/*
 				cls.TryGetField("root", out ShadowClass? root);
 				if (root != null) {
-					// Param was a blank Transform3D
 					ShadowClass blankTransform3D = ShadowClass.CreateInstanceOf("com.threerings.math.Transform3D");
-					// TODO: Compose method
-					// TODO: Invert method
-					// root.TryGetField("children", out List<ShadowClass>? children);
-					// TODO: Call updateRefTransforms on each child too.
+					ArticulatedConfigNode.UpdateRefTransforms(root, blankTransform3D);
 				}
-				*/
 			},
 			
 			["com.threerings.tudey.data.TudeySceneModel"] = (numFields, cls, clydeFile) => {
@@ -117,13 +113,14 @@ namespace OOOReader.WithCustomReadBehavior {
 				clydeFile.ReadInto(cls, "auxModels", new List<ShadowClass>());
 
 				// TODO: tile garbage
+				ShadowClass coordIntMap = cls["_tiles"]!;
 
 				clydeFile.Read("entries", new List<ShadowClass>());
 
 				// TODO: more tile garbage
 
 				string[]? layers = clydeFile.Read("layers", Array.Empty<string>());
-				cls.SetField("layers", layers);
+				cls["layers"] = layers;
 				if (layers != null) {
 					for (int idx = 0; idx < layers.Length; idx++) {
 						clydeFile.Read("layer" + idx, Array.Empty<string>());
@@ -136,8 +133,10 @@ namespace OOOReader.WithCustomReadBehavior {
 				// And nothing else?
 			},
 			["com.threerings.tudey.util.CoordIntMap$Cell"] = (numFields, cls, clydeFile) => {
-				//clydeFile.ReadFieldsDefault(cls);
-				// And nothing else?
+				int[] values = cls["_values"]!;
+				for (int idx = 0; idx < values.Length; idx++) {
+					// TODO: Allow referencing an outer class instance.
+				}
 			},
 		};
 

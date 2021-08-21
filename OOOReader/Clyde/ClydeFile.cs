@@ -74,9 +74,19 @@ namespace OOOReader.Clyde {
 		private BinaryReader Reader { get; }
 
 		/// <summary>
-		/// The system responsible for reading object IDs and segment lengths.
+		/// An <see cref="IDReader"/> that is responsible for reading object IDs.
 		/// </summary>
-		private IDReader IDReader { get; }
+		private IDReader ObjectIDReader { get; }
+
+		/// <summary>
+		/// An <see cref="IDReader"/> that is responsible for reading class IDs.
+		/// </summary>
+		private IDReader ClassIDReader { get; }
+
+		/// <summary>
+		/// An <see cref="IDReader"/> that reads fields, specially created for each individual class.
+		/// </summary>
+		private Dictionary<ShadowClass, IDReader> FieldIDReaders { get; } = new Dictionary<ShadowClass, IDReader>();
 
 		/// <summary>
 		/// Object IDs bound to a template for that type.
@@ -133,7 +143,7 @@ namespace OOOReader.Clyde {
 			uint readHeader = Reader.ReadUInt32BE();
 			if (readHeader != HEADER) throw new IOException($"Invalid header value! Expected 0x{HEADER:X8}, got 0x{readHeader:X8}");
 			
-			ClydeVersion version = (ClydeVersion)Reader.ReadUInt16BE();
+			Version = (ClydeVersion)Reader.ReadUInt16BE();
 			Compressed = Reader.ReadUInt16BE() == 0x1000;
 			if (Compressed) {
 				MemoryStream newStr = (MemoryStream)Decompress(input);
@@ -144,7 +154,9 @@ namespace OOOReader.Clyde {
 				File.WriteAllBytes(".\\TEST_DECOMP.txt", newStr.ToArray());
 			}
 
-			IDReader = IDReader.For(Reader, version);
+			//IDReader = IDReader.For(Reader, Version);
+			ObjectIDReader = IDReader.For(Reader, Version);
+			ClassIDReader = IDReader.For(Reader, Version);
 
 			CachedObjects[0] = NULL;
 			int idx = 1;
@@ -203,7 +215,7 @@ namespace OOOReader.Clyde {
 #if DEBUG
 			long pos = BaseStream.Position;
 			Debug.WriteLine(pos);
-			if (pos == 3408) Debugger.Break();
+			if (pos == 3403) Debugger.Break();
 #endif
 			if (shadowOrPresetObject is ShadowClass shadowInstance && !shadowInstance.IsTemplate) {
 				shadowOrPresetObject = shadowInstance.TemplateType;
@@ -237,7 +249,7 @@ namespace OOOReader.Clyde {
 
 			int length = 0;
 			if (workingClass is ShadowClassArray array) {
-				length = IDReader.ReadNextSegmentLength();
+				length = ObjectIDReader.ReadNextSegmentLength();
 				value = array.NewInstance(length);
 			} else if (workingClass is ShadowClass mainShadow && !isArgMap) {
 				// OOO never seemed to use immutable list/set/map/multisets in their format despite supporting it?
@@ -288,15 +300,19 @@ namespace OOOReader.Clyde {
 				} else {
 					ShadowClass scValue = (ShadowClass)value;
 					if (scValue.IsOOOExportable) {
-						ReadFields(scValue, IDReader.ReadNextSegmentLength());
+						if (!FieldIDReaders.ContainsKey(scValue.TemplateType)) {
+							FieldIDReaders[scValue.TemplateType] = IDReader.For(Reader, Version);
+						}
+						ReadFields(scValue, FieldIDReaders[scValue.TemplateType]);
 					}
 				}
 			}
 			return value;
 		}
 
-		private void ReadFields(ShadowClass into, int numFields) {
-			FindFields(into, numFields);
+		private void ReadFields(ShadowClass into, IDReader fieldIDReader) {
+			int numFields = fieldIDReader.ReadNextSegmentLength();
+			FindFields(into, numFields, fieldIDReader);
 
 			// If one exists, go there afterwards.
 			var readMethod = ReadFieldsProvider.GetReadFieldsMethod(into);
@@ -308,7 +324,7 @@ namespace OOOReader.Clyde {
 		}
 
 		private List<object?> ReadEntries(List<object?> collection) {
-			int amount = IDReader.ReadNextSegmentLength();
+			int amount = ObjectIDReader.ReadNextSegmentLength();
 			for (int i = 0; i < amount; i++) {
 				collection.Add(Read(ObjectClass));
 			}
@@ -316,7 +332,7 @@ namespace OOOReader.Clyde {
 		}
 
 		private Dictionary<object, object?> ReadEntries(Dictionary<object, object?> map) {
-			int amount = IDReader.ReadNextSegmentLength();
+			int amount = ObjectIDReader.ReadNextSegmentLength();
 			for (int i = 0; i < amount; i++) {
 				map[Read(ObjectClass)!] = Read(ObjectClass);
 			}
@@ -324,17 +340,17 @@ namespace OOOReader.Clyde {
 		}
 
 		private Dictionary<object, int> ReadEntries(Dictionary<object, int> multiset) {
-			int amount = IDReader.ReadNextSegmentLength();
+			int amount = ObjectIDReader.ReadNextSegmentLength();
 			for (int i = 0; i < amount; i++) {
-				multiset[Read(ObjectClass)!] = IDReader.ReadNextSegmentLength();
+				multiset[Read(ObjectClass)!] = ObjectIDReader.ReadNextSegmentLength();
 			}
 			return multiset;
 		}
 
-		internal void FindFields(ShadowClass into, int numFields) {
+		internal void FindFields(ShadowClass into, int numFields, IDReader fieldIDReader) {
 			Dictionary<string, object?> fields = new Dictionary<string, object?>();
 			for (int idx = 0; idx < numFields; idx++) {
-				ReadNextFieldInto(into, fields);
+				ReadNextFieldInto(into, fields, fieldIDReader);
 			}
 			CurrentReadFields = fields;
 		}
@@ -345,8 +361,8 @@ namespace OOOReader.Clyde {
 		/// <summary>
 		/// Only to be called by a ReadFields method.
 		/// </summary>
-		private void ReadNextFieldInto(ShadowClass into, Dictionary<string, object?> fields) {
-			int id = IDReader.ReadID();
+		private void ReadNextFieldInto(ShadowClass into, Dictionary<string, object?> fields, IDReader fieldIDReader) {
+			int id = fieldIDReader.ReadID();
 			if (!CachedFields.TryGetValue(into.TemplateType, out var _)) {
 				CachedFields[into.TemplateType] = new Dictionary<int, FieldData>();
 			}
@@ -366,7 +382,7 @@ namespace OOOReader.Clyde {
 		/// </summary>
 		/// <returns></returns>
 		private object ReadClass() {
-			int classId = IDReader.ReadID();
+			int classId = ClassIDReader.ReadID();
 			if (CachedClasses.TryGetValue(classId, out object? thing)) {
 				return thing!;
 			}
@@ -380,7 +396,7 @@ namespace OOOReader.Clyde {
 			if (template is ShadowClass shd && shd.IsPrimitive) {
 				return ReadValue(template, -1);
 			}
-			int objId = IDReader.ReadID();
+			int objId = ObjectIDReader.ReadID();
 			if (CachedObjects.ContainsKey(objId)) {
 				return CachedObjects[objId];
 			}
@@ -388,13 +404,13 @@ namespace OOOReader.Clyde {
 		}
 
 		/// <summary>
-		/// A substitute to <see cref="Read(AbstractShadowClassBase)"/> that supports non-shadow instances.
+		/// A substitute to <see cref="ReadAbstractShadow(AbstractShadowClassBase)"/> that supports non-shadow instances.
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
 		private object? Read(object other) {
 			if (other is AbstractShadowClassBase template) return ReadAbstractShadow(template);
-			int objId = IDReader.ReadID();
+			int objId = ObjectIDReader.ReadID();
 			if (CachedObjects.ContainsKey(objId)) {
 				return CachedObjects[objId];
 			}
