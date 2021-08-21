@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static OOOReader.WithCustomReadBehavior.EncodableProvider;
 
 namespace OOOReader.Clyde {
 
@@ -45,14 +46,26 @@ namespace OOOReader.Clyde {
 			["java.lang.Class"] = new StringStreamer(),
 		};
 
+		private static readonly Dictionary<ShadowClass, IStreamer<ShadowClassEnumInstance>> ENUM_STREAMERS = new Dictionary<ShadowClass, IStreamer<ShadowClassEnumInstance>>();
+		private static readonly Dictionary<ShadowClass, IStreamer<ShadowClass>> ENCODABLE_STREAMERS = new Dictionary<ShadowClass, IStreamer<ShadowClass>>();
+
 		/// <summary>
 		/// Return the streamer for the applicable type, or null if no streamer is applicable.
 		/// </summary>
 		/// <param name="className"></param>
 		/// <returns></returns>
-		public static IStreamer GetStreamer(string className) {
-			if (STREAMERS.ContainsKey(className)) {
-				return STREAMERS[className];
+		public static IStreamer GetStreamer(AbstractShadowClassBase shadow) {
+			if (STREAMERS.ContainsKey(shadow.Signature) && !(shadow is ShadowClassArray arr && arr.ElementType == ClydeFile.StringClass)) {
+				return STREAMERS[shadow.Signature];
+			}
+			// Wait! What about enums?
+			if (shadow is ShadowClass shadowClass) {
+				if (shadowClass.Type == ShadowClass.ShadowType.Enum) {
+					return GetEnumStreamer(shadowClass);
+				}
+				if (shadowClass.IsOOOEncodable) {
+					return GetEncodableStreamer(shadowClass);
+				}
 			}
 			return null;
 		}
@@ -92,31 +105,31 @@ namespace OOOReader.Clyde {
 
 		internal sealed class DoubleStreamer : IStreamer<double> {
 			public double Read(BinaryReader reader) {
-				return reader.ReadDouble();
+				return reader.ReadDoubleBE();
 			}
 		}
 
 		internal sealed class FloatStreamer : IStreamer<float> {
 			public float Read(BinaryReader reader) {
-				return reader.ReadSingle();
+				return reader.ReadSingleBE();
 			}
 		}
 
 		internal sealed class IntegerStreamer : IStreamer<int> {
 			public int Read(BinaryReader reader) {
-				return reader.ReadInt32();
+				return reader.ReadInt32BE();
 			}
 		}
 
 		internal sealed class LongStreamer : IStreamer<long> {
 			public long Read(BinaryReader reader) {
-				return reader.ReadInt64();
+				return reader.ReadInt64BE();
 			}
 		}
 
 		internal sealed class ShortStreamer : IStreamer<short> {
 			public short Read(BinaryReader reader) {
-				return reader.ReadInt16();
+				return reader.ReadInt16BE();
 			}
 		}
 
@@ -126,7 +139,7 @@ namespace OOOReader.Clyde {
 
 		internal sealed class BooleanArrayStreamer : IStreamer<bool[]> {
 			public bool[] Read(BinaryReader reader) {
-				bool[] result = new bool[reader.ReadInt32()];
+				bool[] result = new bool[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
 					result[idx] = reader.ReadBoolean();
 				}
@@ -136,7 +149,7 @@ namespace OOOReader.Clyde {
 
 		internal sealed class ByteArrayStreamer : IStreamer<byte[]> {
 			public byte[] Read(BinaryReader reader) {
-				byte[] result = new byte[reader.ReadInt32()];
+				byte[] result = new byte[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
 					result[idx] = reader.ReadByte();
 				}
@@ -146,7 +159,7 @@ namespace OOOReader.Clyde {
 
 		internal sealed class CharArrayStreamer : IStreamer<char[]> {
 			public char[] Read(BinaryReader reader) {
-				char[] result = new char[reader.ReadInt32()];
+				char[] result = new char[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
 					result[idx] = reader.ReadChar();
 				}
@@ -156,9 +169,9 @@ namespace OOOReader.Clyde {
 
 		internal sealed class DoubleArrayStreamer : IStreamer<double[]> {
 			public double[] Read(BinaryReader reader) {
-				double[] result = new double[reader.ReadInt32()];
+				double[] result = new double[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
-					result[idx] = reader.ReadDouble();
+					result[idx] = reader.ReadDoubleBE();
 				}
 				return result;
 			}
@@ -166,9 +179,9 @@ namespace OOOReader.Clyde {
 
 		internal sealed class FloatArrayStreamer : IStreamer<float[]> {
 			public float[] Read(BinaryReader reader) {
-				float[] result = new float[reader.ReadInt32()];
+				float[] result = new float[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
-					result[idx] = reader.ReadSingle();
+					result[idx] = reader.ReadSingleBE();
 				}
 				return result;
 			}
@@ -176,9 +189,9 @@ namespace OOOReader.Clyde {
 
 		internal sealed class IntegerArrayStreamer : IStreamer<int[]> {
 			public int[] Read(BinaryReader reader) {
-				int[] result = new int[reader.ReadInt32()];
+				int[] result = new int[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
-					result[idx] = reader.ReadInt32();
+					result[idx] = reader.ReadInt32BE();
 				}
 				return result;
 			}
@@ -186,9 +199,9 @@ namespace OOOReader.Clyde {
 
 		internal sealed class LongArrayStreamer : IStreamer<long[]> {
 			public long[] Read(BinaryReader reader) {
-				long[] result = new long[reader.ReadInt32()];
+				long[] result = new long[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
-					result[idx] = reader.ReadInt64();
+					result[idx] = reader.ReadInt64BE();
 				}
 				return result;
 			}
@@ -196,11 +209,67 @@ namespace OOOReader.Clyde {
 
 		internal sealed class ShortArrayStreamer : IStreamer<short[]> {
 			public short[] Read(BinaryReader reader) {
-				short[] result = new short[reader.ReadInt32()];
+				short[] result = new short[reader.ReadInt32BE()];
 				for (int idx = 0; idx < result.Length; idx++) {
-					result[idx] = reader.ReadInt16();
+					result[idx] = reader.ReadInt16BE();
 				}
 				return result;
+			}
+		}
+
+		#endregion
+
+		#region Special Streamers
+
+		internal static IStreamer<ShadowClassEnumInstance> GetEnumStreamer(ShadowClass shadow) {
+			if (ENUM_STREAMERS.TryGetValue(shadow, out IStreamer<ShadowClassEnumInstance> str)) {
+				return str;
+			}
+			ShadowEnumStreamer streamer = new ShadowEnumStreamer(shadow);
+			ENUM_STREAMERS[shadow] = streamer;
+			return streamer;
+		}
+
+		internal static IStreamer<ShadowClass> GetEncodableStreamer(ShadowClass encodableShadow) {
+			if (ENCODABLE_STREAMERS.TryGetValue(encodableShadow, out IStreamer<ShadowClass> str)) {
+				return str;
+			}
+			EncodableStreamer streamer = new EncodableStreamer(encodableShadow);
+			ENCODABLE_STREAMERS[encodableShadow] = streamer;
+			return streamer;
+		}
+
+		internal sealed class ShadowEnumStreamer : IStreamer<ShadowClassEnumInstance> {
+
+			private readonly ShadowClass Shadow;
+
+			public ShadowEnumStreamer(ShadowClass shadow) {
+				if (shadow.Type != ShadowClass.ShadowType.Enum) throw new ArgumentException("ShadowClass input is not an enum type.");
+				Shadow = shadow;
+			}
+
+			public ShadowClassEnumInstance Read(BinaryReader reader) {
+				string name = reader.TryReadUTFBoth();
+				return Shadow.GetEnumItem(name);
+			}
+		}
+
+		internal sealed class EncodableStreamer : IStreamer<ShadowClass> {
+
+			private readonly ShadowClass ShadowTemplate;
+			private readonly IEncodable Encodable;
+
+			public EncodableStreamer(ShadowClass shadow) {
+				IEncodable encodable = GetEncoder(shadow);
+				if (encodable == null) throw new ArgumentException("This is not a supported encodable type.");
+				ShadowTemplate = shadow;
+				Encodable = encodable;
+			}
+
+			public ShadowClass Read(BinaryReader reader) {
+				ShadowClass retn = ShadowTemplate.CloneTemplate();
+				Encodable.DecodeFromStream(retn, reader);
+				return retn;
 			}
 		}
 
@@ -219,4 +288,6 @@ namespace OOOReader.Clyde {
 		object IStreamer.Read(BinaryReader reader) => Read(reader); // Make the nongeneric read method from IStreamer point to read here in IStreamer<T>
 
 	}
-}
+
+	
+ }

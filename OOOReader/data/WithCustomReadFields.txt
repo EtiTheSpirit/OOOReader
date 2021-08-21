@@ -1,14 +1,12 @@
--- com.threerings.config.ConfigGroup
+com.threerings.config.ConfigGroup
 com.threerings.config.ConfigManager
 com.threerings.config.ManagedConfig
-com.threerings.config.swing.ConfigTreeNode
-com.threerings.export.BinaryImporter+ClassData
-com.threerings.export.ObjectMarshaller
+
 com.threerings.math.Transform2D
 com.threerings.math.Transform3D
 com.threerings.opengl.effect.config.BaseParticleSystemConfig+Layer
 com.threerings.opengl.model.config.ArticulatedConfig
-com.threerings.swing.PrefsTreeNode
+
 com.threerings.tudey.data.TudeySceneModel
 com.threerings.tudey.util.CoordIntMap
 com.threerings.tudey.util.CoordIntMap+Cell

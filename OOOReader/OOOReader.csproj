@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="extern\**" />
+    <EmbeddedResource Remove="extern\**" />
+    <None Remove="extern\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.3.2" />
   </ItemGroup>
 

@@ -19,14 +19,15 @@ namespace OOODumper.LazySRGReimpl {
 			string fullName = type.FullName.Replace("+", "$"); // Do NOT replace . with /
 			if (fullName.StartsWith("__") || fullName.Length == 0) return;
 			if (fullName.EndsWith("__<CallerID>")) return;
-			if (type.IsClass) {
-				Writer.Write("CL");
-			} else if (type.IsInterface) {
+			if (type.Name.EndsWith("__Enum")) return;
+			if (type.IsInterface) {
 				Writer.Write("IF");
 			} else if (type.IsAssignableTo(typeof(Attribute))) {
 				Writer.Write("AN");
-			} else if (type.Name.EndsWith("__Enum")) {
+			} else if (type.BaseType == typeof(java.lang.Enum)) {
 				Writer.Write("EN");
+			} else if (type.IsClass) {
+				Writer.Write("CL");
 			} else {
 				Console.WriteLine("Unknown type signature for " + type);
 			}
@@ -38,14 +39,25 @@ namespace OOODumper.LazySRGReimpl {
 			}
 			Writer.Write(fullName);
 
-			if (type.BaseType != null && type.BaseType != typeof(object) && type.BaseType != typeof(java.lang.Object) && type.BaseType != typeof(ikvm.@internal.AnnotationAttributeBase)) {
+			if (type.BaseType != null && type.BaseType != typeof(object) && type.BaseType != typeof(java.lang.Object) && type.BaseType != typeof(ikvm.@internal.AnnotationAttributeBase) && type.BaseType != typeof(java.lang.Enum) && type.BaseType != typeof(Enum)) {
 				string otherFullName = type.BaseType.FullName.Replace("+", "$");
 				if (otherFullName == "System.Object") otherFullName = "java.lang.Object";
 				if (otherFullName.StartsWith("__") || otherFullName.Length == 0) return;
-				Writer.WriteLine(":" + otherFullName);
-			} else {
-				Writer.WriteLine();
+				Writer.Write(":" + otherFullName);
 			}
+
+			Type[] interfaces = type.GetInterfaces();
+			foreach (Type t in interfaces) {
+				if (t.FullName.StartsWith("ikvm")) continue;
+				if (t.FullName.StartsWith("System")) continue;
+				string name = t.FullName.Replace('+', '$');
+				if (name.EndsWith("$__Interface")) {
+					name = name.Replace("$__Interface", "");
+				}
+				Writer.Write("+" + name);
+			}
+
+			Writer.WriteLine();
 
 			FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 			foreach (FieldInfo field in fields) {

@@ -27,15 +27,42 @@ namespace OOOReader.Reader {
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="depth"></param>
+		/// <param name="correctTypes">If true, and if this element type is a primitive / known value type (such as <c>java.lang.String</c>), then the array's type will be the system equivalent.</param>
 		/// <returns></returns>
-		public Array NewInstance(int length = 0, int depth = 1) {
+		public Array NewInstance(int length = 0, int depth = 1, bool correctTypes = true) {
 			int[] lengths = new int[depth];
 			for (int idx = 0; idx < depth; idx++) {
 				lengths[idx] = length;
 			}
-			Array ret = Array.CreateInstance(typeof(ShadowClass), lengths);
-			for (int idx = 0; idx < ret.Length; idx++) {
-				ret.SetValue(ElementType!.Clone(), idx); // This works on all dimensions.
+			
+			Type t = typeof(ShadowClass);
+			if (correctTypes) {
+				string signature = ElementType!.Signature;
+				if (signature == "java.lang.String") {
+					t = typeof(string);
+				} else if (signature == "java.lang.Boolean") {
+					t = typeof(bool);
+				} else if (signature == "java.lang.Char") {
+					t = typeof(char);
+				} else if (signature == "java.lang.Byte") {
+					t = typeof(byte);
+				} else if (signature == "java.lang.Short") {
+					t = typeof(short);
+				} else if (signature == "java.lang.Integer") {
+					t = typeof(int);
+				} else if (signature == "java.lang.Long") {
+					t = typeof(long);
+				} else if (signature == "java.lang.Float") {
+					t = typeof(float);
+				} else if (signature == "java.lang.Double") {
+					t = typeof(double);
+				}
+			}
+			Array ret = Array.CreateInstance(t, lengths);
+			if (t == typeof(ShadowClass)) {
+				for (int idx = 0; idx < ret.Length; idx++) {
+					ret.SetValue(ElementType!.Clone(), idx); // This works on all dimensions.
+				}
 			}
 			return ret;
 		}
@@ -60,7 +87,11 @@ namespace OOOReader.Reader {
 			}
 
 			public ShadowClassArray Create() {
-				return new ShadowClassArray(ShadowClass.TEMPLATES[Signature]);
+				if (ShadowClass.TEMPLATES.TryGetValue(Signature, out ShadowClass? template)) {
+					return new ShadowClassArray(template);
+				} else {
+					return new ShadowClassArray(ShadowClass.TEMPLATES["java.lang.Object"]);
+				}
 			}
 
 		}

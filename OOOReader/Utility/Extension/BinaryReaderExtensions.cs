@@ -131,6 +131,7 @@ namespace OOOReader.Utility.Extension {
 		/// </summary>
 		/// <param name="reader"></param>
 		/// <returns></returns>
+		/*
 		public static VarInt ReadVarInt(this BinaryReader reader) {
 			ulong ret = 0;
 			int size = 1;
@@ -146,6 +147,30 @@ namespace OOOReader.Utility.Extension {
 				size++;
 			}
 			throw new InvalidDataException();
+		}
+		*/
+		public static VarInt ReadVarInt(this BinaryReader reader) {
+			ulong ret = 0;
+			int shift = 0;
+			while (true) {
+				if (shift < 63) {
+					try {
+						byte b = reader.ReadByte();
+						ret |= ((ulong)b & 0x7F) << shift;
+						if ((b & 0x80) != 0) {
+							shift += 7;
+							continue;
+						}
+
+						if (shift <= 0 || (b & 0x7F) != 0) {
+							return (VarInt)ret;
+						}
+					} catch (EndOfStreamException) {
+						return VarInt.Invalid;
+					}
+				}
+				throw new InvalidDataException();
+			}
 		}
 
 		public static string TryReadUTFBoth(this BinaryReader reader) {
@@ -206,11 +231,11 @@ namespace OOOReader.Utility.Extension {
 					case 13: {
 							byteIndex += 2;
 							if (byteIndex > bytesLeft)
-								throw new InvalidDataException($"Malformed input: Partial character at end (stream position {(readerAt + byteIndex):8X})");
+								throw new InvalidDataException($"Malformed input: Partial character at end (stream position {(readerAt + byteIndex):X8})");
 
 							int prevByte1 = stringBytes[byteIndex - 1];
 							if ((prevByte1 & 0xC0) != 0x80)
-								throw new InvalidDataException($"Malformed input around byte {byteIndex} (stream position {(readerAt + byteIndex):8X})");
+								throw new InvalidDataException($"Malformed input around byte {byteIndex} (stream position {(readerAt + byteIndex):X8})");
 
 							result[charsRead] = (char)(ushort)((atChar & 31) << 6 | (prevByte1 & 63));
 							charsRead++;
@@ -219,12 +244,12 @@ namespace OOOReader.Utility.Extension {
 					case 14: {
 							byteIndex += 3;
 							if (byteIndex > bytesLeft)
-								throw new InvalidDataException($"Malformed input: Partial character at end (stream position {(readerAt + byteIndex):8X})");
+								throw new InvalidDataException($"Malformed input: Partial character at end (stream position {(readerAt + byteIndex):X8})");
 
 							int prevByte1 = stringBytes[byteIndex - 2];
 							int prevByte2 = stringBytes[byteIndex - 1];
 							if ((prevByte1 & 0xC0) != 0x80 || (prevByte2 & 0xC0) != 0x80)
-								throw new InvalidDataException($"Malformed input around byte {byteIndex} (stream position {(readerAt + byteIndex):8X})");
+								throw new InvalidDataException($"Malformed input around byte {byteIndex} (stream position {(readerAt + byteIndex):X8})");
 
 							result[charsRead] = (char)(ushort)((atChar & 15) << 12 | (prevByte1 & 63) << 6 | (prevByte2 & 63) << 0);
 							charsRead++;
