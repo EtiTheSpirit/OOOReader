@@ -53,5 +53,29 @@ namespace OOOReader.Utility.Extension {
 				return false;
 			}) != null;
 		}
+
+		/// <summary>
+		/// Returns whether or not this type is a dictionary with no particular type for its keys and values (all it cares about is the dictionary part)
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static bool IsDictionary(this Type type) {
+			if (type.IsGenericType) {
+				return type.GetGenericTypeDefinition().IsAssignableTo(typeof(Dictionary<,>));
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Returns whether or not this type is a dictionary with no particular type for its keys and values (all it cares about is the dictionary part)
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static bool IsList(this Type type) {
+			if (type.IsGenericType) {
+				return type.GetGenericTypeDefinition().IsAssignableTo(typeof(List<>));
+			}
+			return false;
+		}
 	}
 }

@@ -7,12 +7,24 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace OOODumper.LazySRGReimpl {
+
+	[Obsolete]
 	public class ClassDumper : IDisposable {
 
 		private StringWriter Writer { get; }
 
 		public ClassDumper(StringWriter writer) {
 			Writer = writer;
+		}
+
+		public bool IsFinal(Type type) {
+			try {
+				java.lang.Class cls = java.lang.Class.forName(type.FullName.Replace("+", "$"));
+				if (java.lang.reflect.Modifier.isFinal(cls.getModifiers())) {
+					return true;
+				}
+			} catch { }
+			return false;
 		}
 
 		public void WriteTypeAndMembers(Type type) {
@@ -32,7 +44,8 @@ namespace OOODumper.LazySRGReimpl {
 				Console.WriteLine("Unknown type signature for " + type);
 			}
 			if (fullName == "System.Object") fullName = "java.lang.Object";
-			if (type.IsSealed) {
+			//if (type.IsSealed) {
+			if (type.IsSealed) { 
 				Writer.Write("f");
 			} else {
 				Writer.Write("-");

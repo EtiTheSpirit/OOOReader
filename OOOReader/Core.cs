@@ -32,17 +32,23 @@ namespace OOOReader {
 
 			fstr.Write(testmem.ToArray());
 			*/
-			
+
 			//ClydeFile file = new ClydeFile(File.OpenRead(@"E:\Steam Games\steamapps\common\Spiral Knights\rsrc\character\npc\monster\gremlin\null\model-decomp.dat"));
-			ClydeFile file = new ClydeFile(RSRC + @"character\npc\monster\gremlin\null\model.dat");
-			ShadowClass grem = (ShadowClass)file.ReadObject();
-			float[] buffer = grem["implementation"]["skin"]["visible"][0]["geometry"]["vertexArray"]["floatArray"];
-			string s = "";
-			foreach (float b in buffer) {
-				s += b + ", ";
-			}
-			File.WriteAllText(".\\DUMP.txt", s);
-			
+			ClydeFile file = new ClydeFile(RSRC + @"config\accessory.dat");
+			ShadowClass[] accessories = (ShadowClass[])file.ReadObject();
+
+			//float[] buffer = grem["implementation"]["skin"]["visible"][0]["geometry"]["vertexArray"]["floatArray"];
+			/*
+			Stopwatch benchmark = Stopwatch.StartNew();
+			ClydeFile file = new ClydeFile(RSRC + @"..\scenes\1");
+			ShadowClass scene = (ShadowClass)file.ReadObject();
+			benchmark.Stop();
+			Console.WriteLine($"Read file in {benchmark.ElapsedMilliseconds}ms");
+			Console.WriteLine(scene.ToString());
+			File.WriteAllText(".\\DUMP.txt", scene.FullDump());
+			Console.ReadKey();
+			*/
+			Console.ReadKey();
 		}
 	}
 }

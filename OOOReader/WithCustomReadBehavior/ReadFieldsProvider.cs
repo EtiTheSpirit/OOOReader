@@ -110,12 +110,13 @@ namespace OOOReader.WithCustomReadBehavior {
 				clydeFile.ReadInto(cls, "sceneId", 0);
 				clydeFile.ReadInto(cls, "name", string.Empty);
 				clydeFile.ReadInto(cls, "version", 1);
-				clydeFile.ReadInto(cls, "auxModels", new List<ShadowClass>());
+				clydeFile.ReadInto(cls, "auxModels", Array.Empty<ShadowClass>());
 
 				// TODO: tile garbage
 				ShadowClass coordIntMap = cls["_tiles"]!;
+				// TODO: tile garbage
 
-				clydeFile.Read("entries", new List<ShadowClass>());
+				clydeFile.Read("entries", Array.Empty<ShadowClass>());
 
 				// TODO: more tile garbage
 
@@ -129,13 +130,20 @@ namespace OOOReader.WithCustomReadBehavior {
 				
 			},
 			["com.threerings.tudey.util.CoordIntMap"] = (numFields, cls, clydeFile) => {
-				//clydeFile.ReadFieldsDefault(cls);
-				// And nothing else?
+				cls["_mask"] = (1 << 3) - 1; // 3 comes from the "granularity" value of the default constructor.
+				foreach (ShadowClass cell in cls["_cells"]!) {
+					cls["_size"] += cell["_size"];
+				}
 			},
 			["com.threerings.tudey.util.CoordIntMap$Cell"] = (numFields, cls, clydeFile) => {
-				int[] values = cls["_values"]!;
+				int[] values = clydeFile.Read("values", Array.Empty<int>())!;
+				cls["_values"] = values;
+				cls["_size"] ??= 0;
 				for (int idx = 0; idx < values.Length; idx++) {
-					// TODO: Allow referencing an outer class instance.
+					cls.OuterClass!["_empty"] = -1; // Behavior of the default ctor.
+					if (values[idx] != -1) {
+						cls["_size"]++;
+					}
 				}
 			},
 		};

@@ -67,6 +67,10 @@ namespace OOOReader.Reader {
 			return ret;
 		}
 
+		public override string ToString() {
+			return $"ShadowClassArray [Type={Signature}]";
+		}
+
 		/// <summary>
 		/// A pending shadow class array instance. Used for populating fields early.
 		/// When this is used, it is used in place of a <see cref="ShadowClassArray"/> because the element type of the array does not (yet) exist.

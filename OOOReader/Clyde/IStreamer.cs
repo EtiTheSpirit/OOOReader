@@ -34,6 +34,7 @@ namespace OOOReader.Clyde {
 
 			// Considering how Clyde resolves classes I don't actually think the array streamers ever get used for arrays
 			// Only the buffer streamers end up getting used?
+			// Edit: This was very wrong.
 			["java.nio.ByteBuffer"] = new ByteArrayStreamer(),
 			["java.nio.CharBuffer"] = new CharArrayStreamer(),
 			["java.nio.ShortBuffer"] = new ShortArrayStreamer(),
@@ -44,6 +45,16 @@ namespace OOOReader.Clyde {
 
 			["java.io.File"] = new StringStreamer(),
 			["java.lang.Class"] = new StringStreamer(),
+		};
+		private static readonly Dictionary<string, IStreamer> ARRAY_STREAMERS = new Dictionary<string, IStreamer> {
+			["java.lang.Boolean"] = new BooleanArrayStreamer(),
+			["java.lang.Byte"] = new ByteArrayStreamer(),
+			["java.lang.Character"] = new CharArrayStreamer(),
+			["java.lang.Short"] = new ShortArrayStreamer(),
+			["java.lang.Integer"] = new IntegerArrayStreamer(),
+			["java.lang.Long"] = new LongArrayStreamer(),
+			["java.lang.Float"] = new FloatArrayStreamer(),
+			["java.lang.Double"] = new DoubleArrayStreamer(),
 		};
 
 		private static readonly Dictionary<ShadowClass, IStreamer<ShadowClassEnumInstance>> ENUM_STREAMERS = new Dictionary<ShadowClass, IStreamer<ShadowClassEnumInstance>>();
@@ -56,7 +67,13 @@ namespace OOOReader.Clyde {
 		/// <returns></returns>
 		public static IStreamer GetStreamer(AbstractShadowClassBase shadow) {
 			if (STREAMERS.ContainsKey(shadow.Signature) && !(shadow is ShadowClassArray arr && arr.ElementType == ClydeFile.StringClass)) {
-				return STREAMERS[shadow.Signature];
+				if (shadow is ShadowClassArray) {
+					if (ARRAY_STREAMERS.ContainsKey(shadow.Signature)) {
+						return ARRAY_STREAMERS[shadow.Signature];
+					}
+				} else {
+					return STREAMERS[shadow.Signature];
+				}
 			}
 			// Wait! What about enums?
 			if (shadow is ShadowClass shadowClass) {
@@ -267,7 +284,7 @@ namespace OOOReader.Clyde {
 			}
 
 			public ShadowClass Read(BinaryReader reader) {
-				ShadowClass retn = ShadowTemplate.CloneTemplate();
+				ShadowClass retn = ShadowTemplate.NewInstance();
 				Encodable.DecodeFromStream(retn, reader);
 				return retn;
 			}

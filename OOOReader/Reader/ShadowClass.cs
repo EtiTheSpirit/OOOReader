@@ -4,6 +4,7 @@ using OOOReader.Utility.Extension;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -68,35 +69,65 @@ namespace OOOReader.Reader {
 		public bool IsPrimitive { get; }
 
 		/// <summary>
-		/// Whether or not this is an argument map, for special handling.
+		/// Whether or not this is a type of <c>java.util.Map</c>
 		/// </summary>
-		public bool IsArgumentMap => Signature == "com.threerings.config.ArgumentMap";
+		public bool IsMap => _InterfaceNames.Contains("java.util.Map");
 
 		/// <summary>
-		/// Whether or not the outer class of this (if applicable) should be read.
+		/// Whether or not this is a type of <c>java.util.Set</c>
+		/// </summary>
+		public bool IsSet => _InterfaceNames.Contains("java.util.Set");
+
+		/// <summary>
+		/// Whether or not the outer class of this (if applicable) should be read from a <see cref="ClydeFile"/>'s internal strea.
 		/// </summary>
 		public bool ShouldReadOuter { get; private set; }
 
 		/// <summary>
-		/// If this is an inner class, <see cref="OuterClass"/> is a reference the outer class's template <see cref="ShadowClass"/> (that is, a <see cref="ShadowClass"/> where <see cref="IsTemplate"/> is <see langword="true"/> and its <see cref="Name"/> is the name of the outer class).
+		/// An instance of this class's outer class, if applicable.
 		/// </summary>
+		/// <remarks>
+		/// For a reference to the outer class type, use <see cref="OuterClassType"/>.
+		/// </remarks>
 		public ShadowClass? OuterClass {
 			get {
-				if (!CheckedForOuterClass) {
-					CheckedForOuterClass = true;
-					if (Name.Contains('$')) {
-						string outer = Name[0..(Name.LastIndexOf('$') + 1)];
-						if (outer.EndsWith("$")) {
-							outer = outer[0..^1];
-						}
-						_OuterClass = TEMPLATES.GetValueOrDefault(outer);
+				if (GotOuterClassInstance) return _OuterClass;
+				if (_OuterClass == null) {
+					GotOuterClassInstance = true;
+					ShadowClass? baseType = OuterClassType;
+					if (baseType != null) {
+						_OuterClass = baseType.NewInstance();
 					}
 				}
 				return _OuterClass;
 			}
 		}
 		private ShadowClass? _OuterClass = null;
-		private bool CheckedForOuterClass = false;
+		private bool GotOuterClassInstance = false;
+
+		/// <summary>
+		/// If this is an inner class, <see cref="OuterClassType"/> is a reference the outer class's template <see cref="ShadowClass"/> (that is, a <see cref="ShadowClass"/> where <see cref="IsTemplate"/> is <see langword="true"/> and its <see cref="Name"/> is the name of the outer class).
+		/// </summary>
+		/// <remarks>
+		/// For an instance of this <see cref="ShadowClass"/>'s outer class, use <see cref="OuterClass"/>.
+		/// </remarks>
+		public ShadowClass? OuterClassType {
+			get {
+				if (!CheckedForOuterClassType) {
+					CheckedForOuterClassType = true;
+					if (Name.Contains('$')) {
+						string outer = Name[0..(Name.LastIndexOf('$') + 1)];
+						if (outer.EndsWith("$")) {
+							outer = outer[0..^1];
+						}
+						_OuterClassType = TEMPLATES.GetValueOrDefault(outer);
+					}
+				}
+				return _OuterClassType;
+			}
+		}
+		private ShadowClass? _OuterClassType = null;
+		private bool CheckedForOuterClassType = false;
 
 		/// <summary>
 		/// If this is an extension of another class, this is the base class.
@@ -104,7 +135,7 @@ namespace OOOReader.Reader {
 		public ShadowClass? BaseClass {
 			get {
 				if (BaseClassName != null && _BaseClass == null) {
-					_BaseClass = TEMPLATES[BaseClassName]; // Should never be null. Let the exception occur.
+					_BaseClass = GetOrCreateTemplate(BaseClassName);
 				}
 				return _BaseClass;
 			}
@@ -221,6 +252,7 @@ namespace OOOReader.Reader {
 			if (TEMPLATES.TryGetValue(javaFullyQualifiedName, out ShadowClass? shadow)) {
 				return shadow;
 			}
+			Debug.WriteLine("Warning: GetOrCreateTemplate failed to find a pre-constructed class: " + javaFullyQualifiedName);
 			ShadowClass ret = new ShadowClass(javaFullyQualifiedName, baseClassName, null, ShadowType.Class);
 			fieldValues.CopyTo(ret.Fields);
 			shadowedFieldTypeValues.CopyTo(ret.FieldOrFieldElementTypes);
@@ -427,7 +459,7 @@ namespace OOOReader.Reader {
 					if (fieldInfo.Value is PendingShadowClassArray pendingArray) {
 						data.Value.Fields[fieldInfo.Key] = pendingArray.Create();
 					} else if (fieldInfo.Value is ShadowClass shdCls) {
-						data.Value.Fields[fieldInfo.Key] = shdCls.CloneTemplate(); // Turn it into an instance.
+						data.Value.Fields[fieldInfo.Key] = shdCls.NewInstance(); // Turn it into an instance.
 					}
 				}
 			}
@@ -455,8 +487,8 @@ namespace OOOReader.Reader {
 			other.Fields.CopyTo(Fields);
 			other.FieldOrFieldElementTypes.CopyTo(FieldOrFieldElementTypes);
 
-			_OuterClass = other.OuterClass; // use the actual property so it's evaluated
-			CheckedForOuterClass = other.CheckedForOuterClass;
+			_OuterClassType = other.OuterClassType; // use the actual property so it's evaluated
+			CheckedForOuterClassType = other.CheckedForOuterClassType;
 
 			_BaseClass = other._BaseClass;
 			// Name is copied already
@@ -496,7 +528,7 @@ namespace OOOReader.Reader {
 		/// </remarks>
 		/// <returns></returns>
 		/// <exception cref="InvalidOperationException">If this is called on an enum.</exception>
-		public ShadowClass CloneTemplate() {
+		public ShadowClass NewInstance() {
 			if (Type == ShadowType.Enum) throw new InvalidOperationException("Cannot clone the template of an enum.");
 			if (IsTemplate) return Clone();
 			return new ShadowClass(TemplateType!);
@@ -531,12 +563,13 @@ namespace OOOReader.Reader {
 			throw new MissingFieldException(Name, name);
 		}
 
-		private bool TryGetField(string name, out object? value) {
+		public bool TryGetField<T>(string name, out T? value) {
 			if (Type == ShadowType.Annotation || Type == ShadowType.Enum) {
 				throw new InvalidOperationException($"Cannot call {nameof(TryGetField)} on {nameof(ShadowClass)} instances whose type is {ShadowType.Annotation} or {ShadowType.Enum}");
 			}
 			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Invalid field name.");
-			if (Fields.TryGetValue(name, out value)) {
+			if (Fields.TryGetValue(name, out object? retn)) {
+				value = (T?)retn;
 				return true;
 			}
 			if (BaseClass != null) {
@@ -555,16 +588,6 @@ namespace OOOReader.Reader {
 		/// </remarks>
 		/// <typeparam name="T">The type of object to return as.</typeparam>
 		public T? GetField<T>(string name) => (T?)GetField(name);
-
-		/// <inheritdoc cref="TryGetField(string, out object?)"/>
-		/// <remarks>
-		/// May be <see langword="null"/> if <typeparamref name="T"/> is a reference type.
-		/// </remarks>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public bool TryGetField<T>(string name, out T? value) => TryGetField(name, out value);
 
 		/// <summary>
 		/// Returns whether or not this <see cref="ShadowClass"/>'s type inherits from or is directly equal to <paramref name="other"/>.
@@ -674,11 +697,11 @@ namespace OOOReader.Reader {
 		}
 
 		public string FullDump(int depth = 0) {
-			StringBuilder sb = new StringBuilder(new string('\t', depth));
+			StringBuilder sb = new StringBuilder(depth > 0 ? new string('\t', depth) : string.Empty);
 			sb.Append(ToString());
 			sb.AppendLine();
 			foreach (KeyValuePair<string, object?> field in Fields) {
-				sb.Append(new string('\t', depth));
+				sb.Append(new string('\t', depth + 1));
 				sb.Append('[');
 				sb.Append(field.Key);
 				sb.Append("]=");

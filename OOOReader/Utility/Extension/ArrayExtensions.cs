@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OOOReader.Reader;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,13 +28,16 @@ namespace OOOReader.Utility.Extension {
 		}
 
 		public static string ArrayToString(this IEnumerable array, int depth = 1) {
-			StringBuilder sb = new StringBuilder('[');
+			StringBuilder sb = new StringBuilder();
+			sb.Append(new string('\t', depth) + '{');
 			sb.AppendLine();
 			foreach (object o in array) {
-				if (o is IDictionary dictionary) {
-					foreach (KeyValuePair<object, object> info in dictionary) {
+				if (o is string str) {
+					sb.Append(str);
+				} else if (o.GetType().IsDictionary()) {
+					foreach (KeyValuePair<object, object> info in (IEnumerable)o) {
 						sb.AppendLine();
-						sb.Append(new string('\t', depth));
+						sb.Append(new string('\t', depth + 1));
 						sb.Append('[');
 						sb.Append(info.Key.ToString());
 						sb.Append("]=");
@@ -46,10 +50,14 @@ namespace OOOReader.Utility.Extension {
 					}
 				} else if (o is IEnumerable enumerable) {
 					sb.Append(ArrayToString(enumerable, depth + 1));
+				} else if (o is ShadowClass shadow) {
+					sb.Append(shadow.FullDump(depth + 1));
+				} else {
+					sb.Append(o?.ToString() ?? "null");
 				}
 				sb.AppendLine();
 			}
-			sb.Append(']');
+			sb.Append(new string('\t', depth) + '}');
 			return sb.ToString();
 		}
 

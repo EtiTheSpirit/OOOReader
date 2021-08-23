@@ -166,7 +166,9 @@ namespace OOOReader.Utility.Extension {
 							return (VarInt)ret;
 						}
 					} catch (EndOfStreamException) {
-						return VarInt.Invalid;
+						if (shift == 0) {
+							return VarInt.Invalid;
+						}
 					}
 				}
 				throw new InvalidDataException();

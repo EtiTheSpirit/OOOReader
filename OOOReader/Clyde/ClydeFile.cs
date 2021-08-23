@@ -17,7 +17,7 @@ namespace OOOReader.Clyde {
 
 		#region Preset Information
 
-		private static readonly object NULL = new object();
+		private static readonly object NULL = NULLOBJECT.Instance;
 
 		/// <summary>
 		/// Must be in this exact order. These are the types for the "default" classes of Clyde's Binary Importer
@@ -212,18 +212,16 @@ namespace OOOReader.Clyde {
 		}
 
 		private object? ReadValue(object shadowOrPresetObject, int id) {
-#if DEBUG
-			long pos = BaseStream.Position;
-			Debug.WriteLine(pos);
-			if (pos == 3403) Debugger.Break();
-#endif
-			if (shadowOrPresetObject is ShadowClass shadowInstance && !shadowInstance.IsTemplate) {
+			ShadowClass? shadowInstance = shadowOrPresetObject as ShadowClass;
+			if (shadowInstance != null && !shadowInstance.IsTemplate) {
 				shadowOrPresetObject = shadowInstance.TemplateType;
 			}
 			object workingClass = shadowOrPresetObject;
-			bool isArgMap = shadowOrPresetObject is ShadowClass shdCls && shdCls.IsArgumentMap;
-			bool isPrimitive = shadowOrPresetObject is ShadowClass shdCls2 && shdCls2.IsPrimitive;
-			if ((shadowOrPresetObject is AbstractShadowClassBase shd && !shd.IsSealed && !isPrimitive) || isArgMap) {
+			bool isMap = shadowInstance?.IsMap ?? shadowOrPresetObject?.GetType()?.IsDictionary() ?? false;
+			bool isCollection = shadowInstance?.IsSet ?? shadowOrPresetObject?.GetType()?.IsList() ?? false;
+			bool isPrimitive = shadowInstance?.IsPrimitive ?? false;
+			bool isArgumentMap = shadowInstance?.Signature == "com.threerings.config.ArgumentMap"; // has some special handling.
+			if ((shadowOrPresetObject is AbstractShadowClassBase shd && !shd.IsSealed && !isPrimitive) || isMap || isCollection) {
 				object read = ReadClass();
 				if (read == NULL) {
 					return null;
@@ -237,6 +235,7 @@ namespace OOOReader.Clyde {
 			// The solution is to use my dump instead, which has all of the fields and their types (which were prepopulated into ShadowClass)
 			// Their main use case is to see if there is a Streamer instance for the given type. That's easy to implement.
 			if (workingClass is AbstractShadowClassBase shd2) {
+				
 				IStreamer streamer = IStreamer.GetStreamer(shd2);
 				if (streamer != null) {
 					value = streamer.Read(Reader);
@@ -251,16 +250,16 @@ namespace OOOReader.Clyde {
 			if (workingClass is ShadowClassArray array) {
 				length = ObjectIDReader.ReadNextSegmentLength();
 				value = array.NewInstance(length);
-			} else if (workingClass is ShadowClass mainShadow && !isArgMap) {
+			} else if (workingClass is ShadowClass mainShadow && !isArgumentMap) {
 				// OOO never seemed to use immutable list/set/map/multisets in their format despite supporting it?
 				// TODO: Should I support this?
 				// For now: No
 				// OOO *does* use an outer class for creating instances.
 				// While we don't need this, it does do a call to Read so we need it.
-				if (mainShadow.OuterClass != null && mainShadow.ShouldReadOuter) {
+				if (mainShadow.OuterClassType != null && mainShadow.ShouldReadOuter) {
 					Read(ObjectClass); // And then we proceed to do absolutely nothing with this lol
 				}
-				value = mainShadow.CloneTemplate();
+				value = mainShadow.NewInstance();
 			} else {
 				bool ok = false;
 				if (workingClass is List<object?> collection) {
@@ -271,12 +270,12 @@ namespace OOOReader.Clyde {
 					if (workingClass is Dictionary<object, int> multiset) {
 						value = ReadEntries((value as Dictionary<object, int>) ?? multiset);
 						ok = true;
-					} else if (workingClass is Dictionary<object, object?> || isArgMap) {
+					} else if (workingClass is Dictionary<object, object?> || isMap) {
 						map = workingClass as Dictionary<object, object?>;
 						value = ReadEntries((value as Dictionary<object, object?>) ?? map ?? new Dictionary<object, object?>());
 						ok = true;
 					} else if (workingClass is Dictionary<object, List<int>> multimap) {
-						throw new NotSupportedException("Multimaps are not supported at this time.");
+						throw new NotSupportedException("Multimaps are not supported at this time (nor are they in standard Clyde).");
 					}
 				}
 				if (ok) return value;
@@ -299,12 +298,10 @@ namespace OOOReader.Clyde {
 					}
 				} else {
 					ShadowClass scValue = (ShadowClass)value;
-					if (scValue.IsOOOExportable) {
-						if (!FieldIDReaders.ContainsKey(scValue.TemplateType)) {
-							FieldIDReaders[scValue.TemplateType] = IDReader.For(Reader, Version);
-						}
-						ReadFields(scValue, FieldIDReaders[scValue.TemplateType]);
+					if (!FieldIDReaders.ContainsKey(scValue.TemplateType)) {
+						FieldIDReaders[scValue.TemplateType] = IDReader.For(Reader, Version);
 					}
+					ReadFields(scValue, FieldIDReaders[scValue.TemplateType]);
 				}
 			}
 			return value;
@@ -314,9 +311,11 @@ namespace OOOReader.Clyde {
 			int numFields = fieldIDReader.ReadNextSegmentLength();
 			FindFields(into, numFields, fieldIDReader);
 
-			// If one exists, go there afterwards.
-			var readMethod = ReadFieldsProvider.GetReadFieldsMethod(into);
-			readMethod?.Invoke(numFields, into, this);
+			if (into.IsOOOExportable) {
+				// If one exists, go there afterwards.
+				var readMethod = ReadFieldsProvider.GetReadFieldsMethod(into);
+				readMethod?.Invoke(numFields, into, this);
+			}
 
 			into.SetFields(CurrentReadFields);
 
@@ -393,6 +392,7 @@ namespace OOOReader.Clyde {
 		}
 
 		private object? ReadAbstractShadow(AbstractShadowClassBase template) {
+			
 			if (template is ShadowClass shd && shd.IsPrimitive) {
 				return ReadValue(template, -1);
 			}
@@ -446,6 +446,20 @@ namespace OOOReader.Clyde {
 			public FieldData(string name, object template) {
 				Name = name;
 				Template = template;
+			}
+
+		}
+
+		/// <summary>
+		/// This just makes it easier to track nulls.
+		/// </summary>
+		private class NULLOBJECT {
+
+			public static NULLOBJECT Instance = new NULLOBJECT();
+			private NULLOBJECT() { }
+
+			public override string ToString() {
+				return "NULL";
 			}
 
 		}

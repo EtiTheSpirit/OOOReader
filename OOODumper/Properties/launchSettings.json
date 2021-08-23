@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OOODumper": {
+      "commandName": "Project",
+      "commandLineArgs": "-cp \"E:/Steam Games/steamapps/common/Spiral Knights/spiral-view.1.6.jar\""
+    }
+  }
+}

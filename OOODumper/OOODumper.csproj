@@ -96,9 +96,18 @@
     <Reference Include="IKVM.Runtime.JNI">
       <HintPath>..\..\SKAnimatorTools\libs\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
-    <Reference Include="OOOLibAndDeps">
-      <HintPath>..\..\SKAnimatorTools\libs\OOOLibAndDeps.dll</HintPath>
-    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="OOOLibAndDeps.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="projectx-pcode-newer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="projectx-pcode.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
