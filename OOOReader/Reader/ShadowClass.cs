@@ -653,7 +653,12 @@ namespace OOOReader.Reader {
 				throw new InvalidOperationException($"Cannot call {nameof(SetFields)} on {nameof(ShadowClass)} instances whose type is {ShadowType.Annotation} or {ShadowType.Enum}");
 			}
 			foreach (KeyValuePair<string, object?> fieldInfo in fields) {
-				SetField(fieldInfo.Key, fieldInfo.Value, addToThisObject);
+				string fieldName = fieldInfo.Key;
+				string altFieldName = '_' + fieldName;
+				if (Fields.ContainsKey(altFieldName)) {
+					fieldName = altFieldName;
+				}
+				SetField(fieldName, fieldInfo.Value, addToThisObject);
 			}
 		}
 
